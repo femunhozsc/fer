@@ -12,11 +12,14 @@
             --bg-black: #050505;
             --card-bg: #111111;
             --card-border: #222222;
-            --accent: #ffcc00;
+            --accent: #ffcc00;     /* Amarelo Principal */
+            --accent-dark: #b38f00; /* Amarelo Escuro/Ouro */
             --text-main: #ffffff;
             --text-sec: #888888;
             --success: #00e676;
             --danger: #ff5252;
+            --sober-blue: #3e5c76; /* Azul Petróleo */
+            --sober-red: #8a3a3a;  /* Vermelho Vinho */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; }
@@ -25,27 +28,99 @@
             background-color: var(--bg-black);
             color: var(--text-main);
             padding: 20px;
-            padding-bottom: 120px;
+            padding-top: 80px; /* Espaço para o header fixo */
+            padding-bottom: 50px;
         }
 
-        /* HEADER */
-        header { text-align: center; margin-bottom: 25px; }
-        .logo-img { height: 60px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; } /* Aumentei a logo */
-        .greeting { font-size: 1.1rem; color: var(--text-sec); font-weight: 400; }
-        .client-name { color: var(--accent); font-weight: 700; }
+        /* --- HEADER NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            z-index: 100;
+        }
 
-        /* CARDS */
+        .logo-img { height: 35px; display: block; } /* Tamanho original menor */
+        
+        .hamburger {
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .greeting-section { margin-bottom: 25px; margin-top: 10px; }
+        .greeting { font-size: 1rem; color: var(--text-sec); }
+        .client-name { color: var(--accent); font-weight: 700; font-size: 1.2rem; }
+
+        /* --- SIDE MENU --- */
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 200;
+            top: 0;
+            right: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            border-left: 1px solid #333;
+        }
+
+        .sidenav a {
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 1rem;
+            color: #ddd;
+            display: block;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidenav a:hover { color: var(--accent); background: #222; }
+
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .menu-title {
+            padding: 0 30px;
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* --- CARDS --- */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .card-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-sec);
@@ -81,50 +156,22 @@
         .money-input:focus { color: var(--accent); }
 
         /* CHART */
-        .chart-donut-container {
-            position: relative;
-            height: 220px;
-            margin: 10px 0;
-        }
-        .total-center {
-            text-align: center;
-            margin-top: -10px;
-            margin-bottom: 20px;
-        }
+        .chart-donut-container { position: relative; height: 220px; margin: 10px 0; }
+        .total-center { text-align: center; margin-top: -10px; margin-bottom: 20px; }
         .total-center h3 { font-size: 1.8rem; color: var(--text-main); }
         .total-center span { color: var(--text-sec); font-size: 0.8rem; }
 
         /* META BAR */
         .meta-wrapper { margin-top: 20px; }
-        .progress-track {
-            background: #222;
-            height: 10px;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 8px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #b38f00, var(--accent));
-            width: 0%;
-            transition: width 1s ease;
-        }
+        .progress-track { background: #222; height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #b38f00, var(--accent)); width: 0%; transition: width 1s ease; }
         .meta-info { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sec); }
-        
-        /* Input Meta escondido visualmente mas editável */
-        .meta-input-inline {
-            background: none;
-            border: none;
-            color: #888;
-            width: 100px;
-            text-align: right;
-            font-size: 0.8rem;
-        }
+        .meta-input-inline { background: none; border: none; color: #888; width: 100px; text-align: right; font-size: 0.8rem; }
 
-        /* INVESTIMENT RESULTS */
+        /* RESULTS */
         .invest-result {
             background: rgba(255, 204, 0, 0.05);
-            border: 1px solid var(--accent);
+            border: 1px solid var(--accent-dark);
             padding: 15px;
             border-radius: 12px;
             text-align: center;
@@ -133,72 +180,54 @@
         .invest-val { font-size: 1.8rem; font-weight: 700; color: var(--accent); display: block; }
         .invest-label { font-size: 0.8rem; color: var(--text-sec); text-transform: uppercase; }
 
-        /* CALCULADORA */
+        /* CALCULATOR */
         .calc-grid { display: grid; gap: 10px; }
         .calc-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .col-half { flex: 1; }
-        
         .calc-label { display: block; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 5px; }
-        
-        .custom-select {
-            background: #222;
-            border: 1px solid #333;
-            color: white;
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 5px;
-        }
+        .custom-select { background: #222; border: 1px solid #333; color: white; padding: 2px 5px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; }
+        .calc-input-styled { width: 100%; background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-size: 1rem; }
+        .btn-calc { width: 100%; background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 8px; font-weight: 700; margin-top: 15px; font-size: 1rem; }
 
-        .calc-input-styled {
-            width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .btn-calc {
-            width: 100%;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: 700;
-            margin-top: 15px;
-            font-size: 1rem;
-        }
-
-        /* PROJEÇÃO */
-        .projection-container {
-            margin-top: 30px;
-            display: none;
-            border-top: 1px dashed #333;
-            padding-top: 20px;
-        }
+        /* PROJECTION */
+        .projection-container { margin-top: 30px; display: none; border-top: 1px dashed #333; padding-top: 20px; }
         .chart-line-container { height: 250px; width: 100%; margin-top: 20px; }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .stat-box { background: #181818; padding: 10px; border-radius: 8px; text-align: center; }
         .stat-val { display: block; font-weight: bold; color: white; font-size: 0.9rem; }
         .stat-lbl { font-size: 0.7rem; color: #777; }
+        
+        /* Overlay */
+        .overlay-bg {
+            position: fixed; display: none; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.7); z-index: 150;
+        }
 
     </style>
 </head>
 <body>
 
-    <header>
-        <img src="logo.png" alt="Logo" class="logo-img">
-        <div class="greeting">Olá, <span class="client-name">Fernando Sanga</span></div>
-    </header>
+    <nav class="navbar">
+        <img src="logo.png" alt="Clearview" class="logo-img">
+        <button class="hamburger" onclick="openNav()">&#9776;</button>
+    </nav>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="menu-title">Canais de Atendimento</div>
+        <a href="https://wa.me/44991293357" target="_blank">
+            <span>📱</span> WhatsApp
+        </a>
+        <a href="mailto:contato@clearviewcapital.com.br">
+            <span>✉️</span> E-mail
+        </a>
+    </div>
+    <div id="overlay" class="overlay-bg" onclick="closeNav()"></div>
+
+    <div class="greeting-section">
+        <div class="greeting">Olá,</div>
+        <div class="client-name">Fernando Sanga</div>
+    </div>
 
     <div class="card">
         <div class="card-title">
@@ -216,37 +245,37 @@
         </div>
 
         <div class="input-group">
-            <span class="input-label" style="border-left: 3px solid #ffcc00; padding-left:8px;">Renda Fixa</span>
+            <span class="input-label" style="border-left: 3px solid var(--accent); padding-left:8px;">Renda Fixa</span>
             <input type="tel" class="money-input asset-input" id="rf" onkeyup="mask(this); updateAssets()">
         </div>
         
         <div class="input-group">
-            <span class="input-label" style="border-left: 3px solid #00e676; padding-left:8px;">Reserva de Emergência</span>
+            <span class="input-label" style="border-left: 3px solid var(--accent-dark); padding-left:8px;">Reserva Emergência</span>
             <input type="tel" class="money-input asset-input" id="reserva" onkeyup="mask(this); updateAssets()">
         </div>
 
         <div class="input-group">
-            <span class="input-label" style="border-left: 3px solid #333333; padding-left:8px;">Renda Variável</span>
+            <span class="input-label" style="border-left: 3px solid #333; padding-left:8px;">Renda Variável</span>
             <input type="tel" class="money-input asset-input" id="rv" onkeyup="mask(this); updateAssets()">
         </div>
 
         <div class="input-group">
-            <span class="input-label" style="border-left: 3px solid #ffffff; padding-left:8px;">Imóveis/FIIs</span>
+            <span class="input-label" style="border-left: 3px solid #fff; padding-left:8px;">Imóveis/FIIs</span>
             <input type="tel" class="money-input asset-input" id="imoveis" onkeyup="mask(this); updateAssets()">
         </div>
 
         <div class="input-group">
-            <span class="input-label" style="border-left: 3px solid #666666; padding-left:8px;">Criptomoedas</span>
+            <span class="input-label" style="border-left: 3px solid #666; padding-left:8px;">Criptomoedas</span>
             <input type="tel" class="money-input asset-input" id="cripto" onkeyup="mask(this); updateAssets()">
         </div>
 
         <div class="input-group">
-            <span class="input-label" style="border-left: 3px solid #00bfff; padding-left:8px;">Ativos Internacionais</span>
+            <span class="input-label" style="border-left: 3px solid var(--sober-blue); padding-left:8px;">Internacional</span>
             <input type="tel" class="money-input asset-input" id="internacional" onkeyup="mask(this); updateAssets()">
         </div>
 
         <div class="input-group">
-            <span class="input-label" style="border-left: 3px solid #ff5252; padding-left:8px;">Outros</span>
+            <span class="input-label" style="border-left: 3px solid var(--sober-red); padding-left:8px;">Outros</span>
             <input type="tel" class="money-input asset-input" id="outros_ativos" onkeyup="mask(this); updateAssets()">
         </div>
 
@@ -346,7 +375,6 @@
 
         <div class="projection-container" id="projContainer">
             <h3 style="text-align:center; color:white; font-size:1.1rem;">Resultado da Projeção</h3>
-            
             <div class="stats-grid">
                 <div class="stat-box">
                     <span class="stat-lbl">Total Acumulado</span>
@@ -365,7 +393,6 @@
                     <span class="stat-val" style="color:#aaa" id="resReal">--</span>
                 </div>
             </div>
-
             <div class="chart-line-container">
                 <canvas id="lineChart"></canvas>
             </div>
@@ -373,7 +400,17 @@
     </div>
 
     <script>
-        // --- 1. DADOS PADRÃO (FERNANDO) ---
+        // --- MENU LOGIC ---
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+            document.getElementById("overlay").style.display = "block";
+        }
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        // --- DEFAULTS ---
         const defaults = {
             rf: 10000, reserva: 0, rv: 5000, imoveis: 0, cripto: 0, internacional: 0, outros_ativos: 0,
             metaVal: 350000,
@@ -381,32 +418,14 @@
             calcInit: 15000, calcMonth: 1000, txJuros: 10, txInf: 0, tempo: 10
         };
 
-        // --- 2. SISTEMA DE PERSISTÊNCIA (LOCALSTORAGE) ---
         function loadData() {
-            const saved = localStorage.getItem('clearviewData');
+            const saved = localStorage.getItem('clearviewData_v2'); // mudei a chave pra resetar bugs antigos
             const data = saved ? JSON.parse(saved) : defaults;
 
-            // Preencher inputs
-            fillInput('rf', data.rf);
-            fillInput('reserva', data.reserva);
-            fillInput('rv', data.rv);
-            fillInput('imoveis', data.imoveis);
-            fillInput('cripto', data.cripto);
-            fillInput('internacional', data.internacional);
-            fillInput('outros_ativos', data.outros_ativos);
-            fillInput('metaVal', data.metaVal);
-            
-            fillInput('salario', data.salario);
-            fillInput('moradia', data.moradia);
-            fillInput('alimentacao', data.alimentacao);
-            fillInput('cartao', data.cartao);
-            fillInput('lazer', data.lazer);
-            fillInput('outros_gastos', data.outros_gastos);
+            ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal',
+             'salario','moradia','alimentacao','cartao','lazer','outros_gastos','calcInit','calcMonth']
+             .forEach(id => fillInput(id, data[id] !== undefined ? data[id] : defaults[id] || 0));
 
-            fillInput('calcInit', data.calcInit);
-            fillInput('calcMonth', data.calcMonth);
-            
-            // Campos numéricos diretos (sem mascara R$)
             document.getElementById('txJuros').value = data.txJuros || 10;
             document.getElementById('txInf').value = data.txInf || 0;
             document.getElementById('tempo').value = data.tempo || 10;
@@ -436,29 +455,21 @@
                 txInf: document.getElementById('txInf').value,
                 tempo: document.getElementById('tempo').value
             };
-            localStorage.setItem('clearviewData', JSON.stringify(data));
+            localStorage.setItem('clearviewData_v2', JSON.stringify(data));
         }
 
         function fillInput(id, val) {
             const el = document.getElementById(id);
-            if(el) {
-                // Aplica formatação de moeda para os campos que precisam
-                el.value = val.toFixed(2).replace('.', '');
-                mask(el);
-            }
+            if(el) { el.value = val.toFixed(2).replace('.', ''); mask(el); }
         }
 
-        // --- 3. FUNÇÕES AUXILIARES ---
+        // --- UTILS ---
         const parseMoney = (val) => {
             if(!val) return 0;
             if(typeof val === 'number') return val;
             return parseFloat(val.replace(/\D/g, '')) / 100;
         };
-
-        const formatBRL = (val) => {
-            return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        };
-
+        const formatBRL = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         function mask(i) {
             let v = i.value.replace(/\D/g,'');
             v = (v/100).toFixed(2) + '';
@@ -467,7 +478,7 @@
             i.value = 'R$ ' + v;
         }
 
-        // --- 4. GRÁFICOS E LÓGICA ---
+        // --- CHARTS & CALC ---
         let donutChart = null;
         let lineChart = null;
 
@@ -483,37 +494,31 @@
             const total = rf + reserva + rv + imoveis + cripto + inter + outros;
             const meta = parseMoney(document.getElementById('metaVal').value);
 
-            // Display
             document.getElementById('displayTotal').innerText = formatBRL(total);
             document.getElementById('headerTotal').innerText = formatBRL(total);
 
-            // Barra Progresso
             let pct = 0;
             if(meta > 0) pct = (total / meta) * 100;
             if(pct > 100) pct = 100;
             document.getElementById('progBar').style.width = pct + '%';
             document.getElementById('percText').innerText = pct.toFixed(1) + '%';
 
-            // Chart Update
             if(donutChart) {
                 donutChart.data.datasets[0].data = [rf, reserva, rv, imoveis, cripto, inter, outros];
                 donutChart.update();
             }
-
-            saveAllData(); // Salvar
+            saveAllData();
         }
 
         function updateFlow() {
             const sal = parseMoney(document.getElementById('salario').value);
             let despesas = 0;
             document.querySelectorAll('.expense').forEach(e => despesas += parseMoney(e.value));
-            
             const sobra = sal - despesas;
             const el = document.getElementById('valInvest');
             el.innerText = formatBRL(sobra);
             el.style.color = sobra < 0 ? 'var(--danger)' : 'var(--accent)';
-
-            saveAllData(); // Salvar
+            saveAllData();
         }
 
         function calculateProjection() {
@@ -527,18 +532,14 @@
             const tipoJuros = document.getElementById('selJuros').value;
             const tipoInf = document.getElementById('selInf').value;
 
+            // Lógica de conversão unificada para MENSAL
             let meses = (tipoTempo === 'anos') ? tempo * 12 : tempo;
             let i_m = (tipoJuros === 'aa') ? (Math.pow(1 + juros/100, 1/12) - 1) : (juros/100);
             let inf_m = (tipoInf === 'aa') ? (Math.pow(1 + inflacao/100, 1/12) - 1) : (inflacao/100);
 
             let labels = [];
-            let dataTotal = [];
-            let dataInvest = [];
-            let dataReal = [];
-
-            let currentTotal = P;
-            let currentInvest = P;
-            let currentReal = P;
+            let dataTotal = [], dataInvest = [], dataReal = [];
+            let currentTotal = P, currentInvest = P, currentReal = P;
 
             for(let m = 0; m <= meses; m++) {
                 if(meses > 60) {
@@ -568,11 +569,11 @@
             document.getElementById('projContainer').style.display = 'block';
             document.getElementById('resFinal').innerText = formatBRL(currentTotal);
             document.getElementById('resInvestido').innerText = formatBRL(currentInvest);
-            document.getElementById('resJuros').innerText = formatBRL(currentReal - currentInvest); // Ganho Real aprox
+            document.getElementById('resJuros').innerText = formatBRL(currentReal - currentInvest); 
             document.getElementById('resReal').innerText = formatBRL(currentReal);
 
             renderLineChart(labels, dataTotal, dataInvest, dataReal);
-            saveAllData(); // Salvar
+            saveAllData();
         }
 
         function renderLineChart(lbls, dTotal, dInvest, dReal) {
@@ -610,7 +611,7 @@
         }
 
         window.onload = function() {
-            loadData(); // Carrega dados do LocalStorage ou Defaults
+            loadData();
             
             const ctxD = document.getElementById('assetsChart').getContext('2d');
             donutChart = new Chart(ctxD, {
@@ -618,8 +619,16 @@
                 data: {
                     labels: ['RF', 'Reserva', 'RV', 'Imóveis', 'Cripto', 'Inter.', 'Outros'],
                     datasets: [{
-                        data: [1,0,1,0,0,0,0], 
-                        backgroundColor: ['#ffcc00', '#00e676', '#333333', '#ffffff', '#666666', '#00bfff', '#ff5252'],
+                        data: [1,1,1,1,1,1,1], 
+                        backgroundColor: [
+                            '#ffcc00', // RF (Amarelo Principal)
+                            '#b38f00', // Reserva (Ouro Escuro - Novo)
+                            '#333333', // RV (Grafite)
+                            '#ffffff', // Imoveis (Branco)
+                            '#666666', // Cripto (Cinza)
+                            '#3e5c76', // Internacional (Azul Petróleo - Novo)
+                            '#8a3a3a'  // Outros (Vermelho Sóbrio - Novo)
+                        ],
                         borderWidth: 0
                     }]
                 },
