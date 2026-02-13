@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Clearview Dashboard</title>
+    <title>Clearview</title>
     <meta name="apple-mobile-web-app-title" content="Clearview Dashboard">
     <meta name="application-name" content="Clearview Dashboard">
     
-    <link rel="apple-touch-icon" href="favicon.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="favicon.png">
-
-    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="shortcut icon" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+
+    <link rel="apple-touch-icon" href="app-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="app-icon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="app-icon.png">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -149,14 +148,9 @@
         .stat-val { display: block; font-weight: bold; color: white; font-size: 0.9rem; }
         .stat-lbl { font-size: 0.7rem; color: #777; }
 
-        /* FOOTER COPYRIGHT */
+        /* FOOTER */
         footer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: var(--text-sec);
-            margin-top: 40px;
-            opacity: 0.6;
-            letter-spacing: 0.5px;
+            text-align: center; font-size: 0.7rem; color: var(--text-sec); margin-top: 40px; opacity: 0.6; letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -292,16 +286,13 @@
         function openNav() { document.getElementById("mySidenav").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidenav").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
 
-        // --- DADOS PERSONALIZADOS (LUIS FELIPE) ---
         const defaults = {
             rf: 5000, reserva: 5000, rv: 0, imoveis: 0, cripto: 5000, internacional: 0, outros_ativos: 2000,
-            metaVal: 300000,
-            salario: 2000, moradia: 800, alimentacao: 300, cartao: 200, lazer: 200, outros_gastos: 100,
+            metaVal: 300000, salario: 2000, moradia: 800, alimentacao: 300, cartao: 200, lazer: 200, outros_gastos: 100,
             calcInit: 17000, calcMonth: 400, txJuros: 10, txInf: 0, tempo: 10
         };
 
         function loadData() {
-            // Chave específica para o Luis para manter os dados dele separados
             const saved = localStorage.getItem('clearview_luis'); 
             const data = saved ? JSON.parse(saved) : defaults;
             ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal','salario','moradia','alimentacao','cartao','lazer','outros_gastos','calcInit','calcMonth']
