@@ -25,16 +25,16 @@
             background-color: var(--bg-black);
             color: var(--text-main);
             padding: 20px;
-            padding-bottom: 120px; /* Espaço extra no final */
+            padding-bottom: 120px;
         }
 
         /* HEADER */
         header { text-align: center; margin-bottom: 25px; }
-        .logo-img { height: 40px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
+        .logo-img { height: 60px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; } /* Aumentei a logo */
         .greeting { font-size: 1.1rem; color: var(--text-sec); font-weight: 400; }
         .client-name { color: var(--accent); font-weight: 700; }
 
-        /* CARDS GERAIS */
+        /* CARDS */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -56,18 +56,18 @@
             justify-content: space-between;
         }
 
-        /* INPUTS ESTILIZADOS */
+        /* INPUTS */
         .input-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             background: rgba(255,255,255,0.03);
             padding: 8px 12px;
             border-radius: 8px;
         }
 
-        .input-label { font-size: 0.9rem; color: #ccc; }
+        .input-label { font-size: 0.85rem; color: #ccc; }
         
         .money-input {
             background: transparent;
@@ -75,12 +75,12 @@
             color: var(--text-main);
             font-weight: 600;
             text-align: right;
-            font-size: 1rem;
+            font-size: 0.95rem;
             width: 140px;
         }
         .money-input:focus { color: var(--accent); }
 
-        /* SEÇÃO DE ATIVOS (Chart Pizza) */
+        /* CHART */
         .chart-donut-container {
             position: relative;
             height: 220px;
@@ -91,10 +91,10 @@
             margin-top: -10px;
             margin-bottom: 20px;
         }
-        .total-center h3 { font-size: 2rem; color: var(--text-main); }
+        .total-center h3 { font-size: 1.8rem; color: var(--text-main); }
         .total-center span { color: var(--text-sec); font-size: 0.8rem; }
 
-        /* BARRA DE PROGRESSO DA META */
+        /* META BAR */
         .meta-wrapper { margin-top: 20px; }
         .progress-track {
             background: #222;
@@ -109,9 +109,19 @@
             width: 0%;
             transition: width 1s ease;
         }
-        .meta-info { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-sec); }
+        .meta-info { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sec); }
+        
+        /* Input Meta escondido visualmente mas editável */
+        .meta-input-inline {
+            background: none;
+            border: none;
+            color: #888;
+            width: 100px;
+            text-align: right;
+            font-size: 0.8rem;
+        }
 
-        /* FLUXO / VALOR PARA INVESTIR */
+        /* INVESTIMENT RESULTS */
         .invest-result {
             background: rgba(255, 204, 0, 0.05);
             border: 1px solid var(--accent);
@@ -123,16 +133,9 @@
         .invest-val { font-size: 1.8rem; font-weight: 700; color: var(--accent); display: block; }
         .invest-label { font-size: 0.8rem; color: var(--text-sec); text-transform: uppercase; }
 
-        /* CALCULADORA AVANÇADA */
-        .calc-grid {
-            display: grid;
-            gap: 10px;
-        }
-        .calc-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+        /* CALCULADORA */
+        .calc-grid { display: grid; gap: 10px; }
+        .calc-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .col-half { flex: 1; }
         
         .calc-label { display: block; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 5px; }
@@ -141,9 +144,10 @@
             background: #222;
             border: 1px solid #333;
             color: white;
-            padding: 5px;
+            padding: 2px 5px;
             border-radius: 4px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            margin-left: 5px;
         }
 
         .calc-input-styled {
@@ -168,10 +172,10 @@
             font-size: 1rem;
         }
 
-        /* RESULTADOS CALCULADORA */
+        /* PROJEÇÃO */
         .projection-container {
             margin-top: 30px;
-            display: none; /* Escondido até calcular */
+            display: none;
             border-top: 1px dashed #333;
             padding-top: 20px;
         }
@@ -184,7 +188,7 @@
             margin-top: 15px;
         }
         .stat-box { background: #181818; padding: 10px; border-radius: 8px; text-align: center; }
-        .stat-val { display: block; font-weight: bold; color: white; }
+        .stat-val { display: block; font-weight: bold; color: white; font-size: 0.9rem; }
         .stat-lbl { font-size: 0.7rem; color: #777; }
 
     </style>
@@ -213,24 +217,42 @@
 
         <div class="input-group">
             <span class="input-label" style="border-left: 3px solid #ffcc00; padding-left:8px;">Renda Fixa</span>
-            <input type="tel" class="money-input asset-input" id="rf" value="10000" onkeyup="mask(this); updateAssets()">
+            <input type="tel" class="money-input asset-input" id="rf" onkeyup="mask(this); updateAssets()">
         </div>
+        
+        <div class="input-group">
+            <span class="input-label" style="border-left: 3px solid #00e676; padding-left:8px;">Reserva de Emergência</span>
+            <input type="tel" class="money-input asset-input" id="reserva" onkeyup="mask(this); updateAssets()">
+        </div>
+
         <div class="input-group">
             <span class="input-label" style="border-left: 3px solid #333333; padding-left:8px;">Renda Variável</span>
-            <input type="tel" class="money-input asset-input" id="rv" value="5000" onkeyup="mask(this); updateAssets()">
+            <input type="tel" class="money-input asset-input" id="rv" onkeyup="mask(this); updateAssets()">
         </div>
+
         <div class="input-group">
             <span class="input-label" style="border-left: 3px solid #ffffff; padding-left:8px;">Imóveis/FIIs</span>
-            <input type="tel" class="money-input asset-input" id="imoveis" value="0" onkeyup="mask(this); updateAssets()">
+            <input type="tel" class="money-input asset-input" id="imoveis" onkeyup="mask(this); updateAssets()">
         </div>
+
         <div class="input-group">
             <span class="input-label" style="border-left: 3px solid #666666; padding-left:8px;">Criptomoedas</span>
-            <input type="tel" class="money-input asset-input" id="cripto" value="0" onkeyup="mask(this); updateAssets()">
+            <input type="tel" class="money-input asset-input" id="cripto" onkeyup="mask(this); updateAssets()">
+        </div>
+
+        <div class="input-group">
+            <span class="input-label" style="border-left: 3px solid #00bfff; padding-left:8px;">Ativos Internacionais</span>
+            <input type="tel" class="money-input asset-input" id="internacional" onkeyup="mask(this); updateAssets()">
+        </div>
+
+        <div class="input-group">
+            <span class="input-label" style="border-left: 3px solid #ff5252; padding-left:8px;">Outros</span>
+            <input type="tel" class="money-input asset-input" id="outros_ativos" onkeyup="mask(this); updateAssets()">
         </div>
 
         <div class="meta-wrapper">
             <div class="meta-info">
-                <span>Meta: <input type="tel" id="metaVal" value="350000" style="background:none; border:none; color:#888; width:80px;" onkeyup="mask(this); updateAssets()"></span>
+                <span>Meta: <input type="tel" class="meta-input-inline" id="metaVal" onkeyup="mask(this); updateAssets()"></span>
                 <span id="percText">0%</span>
             </div>
             <div class="progress-track">
@@ -244,31 +266,35 @@
 
         <div class="input-group">
             <span class="input-label" style="color:var(--success)">Salário Líquido</span>
-            <input type="tel" class="money-input" id="salario" value="2500" style="color:var(--success)" onkeyup="mask(this); updateFlow()">
+            <input type="tel" class="money-input" id="salario" style="color:var(--success)" onkeyup="mask(this); updateFlow()">
         </div>
 
         <div style="margin: 15px 0; border-top: 1px dashed #333;"></div>
 
         <div class="input-group">
             <span class="input-label">Moradia</span>
-            <input type="tel" class="money-input expense" value="800" onkeyup="mask(this); updateFlow()">
+            <input type="tel" class="money-input expense" id="moradia" onkeyup="mask(this); updateFlow()">
         </div>
         <div class="input-group">
             <span class="input-label">Alimentação</span>
-            <input type="tel" class="money-input expense" value="200" onkeyup="mask(this); updateFlow()">
+            <input type="tel" class="money-input expense" id="alimentacao" onkeyup="mask(this); updateFlow()">
         </div>
         <div class="input-group">
             <span class="input-label">Cartão Crédito</span>
-            <input type="tel" class="money-input expense" value="200" onkeyup="mask(this); updateFlow()">
+            <input type="tel" class="money-input expense" id="cartao" onkeyup="mask(this); updateFlow()">
         </div>
         <div class="input-group">
             <span class="input-label">Lazer</span>
-            <input type="tel" class="money-input expense" value="300" onkeyup="mask(this); updateFlow()">
+            <input type="tel" class="money-input expense" id="lazer" onkeyup="mask(this); updateFlow()">
+        </div>
+        <div class="input-group">
+            <span class="input-label">Outros Gastos</span>
+            <input type="tel" class="money-input expense" id="outros_gastos" onkeyup="mask(this); updateFlow()">
         </div>
 
         <div class="invest-result">
             <span class="invest-label">Valor para investir</span>
-            <span class="invest-val" id="valInvest">R$ 1.000,00</span>
+            <span class="invest-val" id="valInvest">R$ 0,00</span>
         </div>
     </div>
 
@@ -279,28 +305,28 @@
             <div class="calc-row">
                 <div class="col-half">
                     <span class="calc-label">Aporte Inicial</span>
-                    <input type="tel" class="calc-input-styled" id="calcInit" value="15000" onkeyup="mask(this)">
+                    <input type="tel" class="calc-input-styled" id="calcInit" onkeyup="mask(this); saveAllData()">
                 </div>
                 <div class="col-half">
                     <span class="calc-label">Aporte Mensal</span>
-                    <input type="tel" class="calc-input-styled" id="calcMonth" value="1000" onkeyup="mask(this)">
+                    <input type="tel" class="calc-input-styled" id="calcMonth" onkeyup="mask(this); saveAllData()">
                 </div>
             </div>
 
             <div class="calc-row">
                 <div class="col-half">
                     <span class="calc-label">
-                        Taxa de Juros 
-                        <select id="selJuros" class="custom-select"><option value="aa">a.a</option><option value="am">a.m</option></select>
+                        Taxa Juros 
+                        <select id="selJuros" class="custom-select" onchange="saveAllData()"><option value="aa">a.a</option><option value="am">a.m</option></select>
                     </span>
-                    <input type="number" class="calc-input-styled" id="txJuros" value="10">
+                    <input type="number" class="calc-input-styled" id="txJuros" onkeyup="saveAllData()">
                 </div>
                 <div class="col-half">
                     <span class="calc-label">
                         Inflação
-                        <select id="selInf" class="custom-select"><option value="aa">a.a</option><option value="am">a.m</option></select>
+                        <select id="selInf" class="custom-select" onchange="saveAllData()"><option value="aa">a.a</option><option value="am">a.m</option></select>
                     </span>
-                    <input type="number" class="calc-input-styled" id="txInf" value="4">
+                    <input type="number" class="calc-input-styled" id="txInf" onkeyup="saveAllData()">
                 </div>
             </div>
 
@@ -308,9 +334,9 @@
                 <div class="col-half">
                     <span class="calc-label">
                         Período
-                        <select id="selTempo" class="custom-select"><option value="anos">Anos</option><option value="meses">Meses</option></select>
+                        <select id="selTempo" class="custom-select" onchange="saveAllData()"><option value="anos">Anos</option><option value="meses">Meses</option></select>
                     </span>
-                    <input type="number" class="calc-input-styled" id="tempo" value="10">
+                    <input type="number" class="calc-input-styled" id="tempo" onkeyup="saveAllData()">
                 </div>
                 <div class="col-half" style="display:flex; align-items:end;">
                     <button class="btn-calc" onclick="calculateProjection()">Calcular</button>
@@ -331,7 +357,7 @@
                     <span class="stat-val" id="resInvestido">--</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-lbl">Ganho Real (Juros - Inf)</span>
+                    <span class="stat-lbl">Ganho Real</span>
                     <span class="stat-val" style="color:var(--success)" id="resJuros">--</span>
                 </div>
                 <div class="stat-box">
@@ -347,7 +373,82 @@
     </div>
 
     <script>
-        // --- UTILITÁRIOS ---
+        // --- 1. DADOS PADRÃO (FERNANDO) ---
+        const defaults = {
+            rf: 10000, reserva: 0, rv: 5000, imoveis: 0, cripto: 0, internacional: 0, outros_ativos: 0,
+            metaVal: 350000,
+            salario: 2500, moradia: 800, alimentacao: 200, cartao: 200, lazer: 300, outros_gastos: 0,
+            calcInit: 15000, calcMonth: 1000, txJuros: 10, txInf: 0, tempo: 10
+        };
+
+        // --- 2. SISTEMA DE PERSISTÊNCIA (LOCALSTORAGE) ---
+        function loadData() {
+            const saved = localStorage.getItem('clearviewData');
+            const data = saved ? JSON.parse(saved) : defaults;
+
+            // Preencher inputs
+            fillInput('rf', data.rf);
+            fillInput('reserva', data.reserva);
+            fillInput('rv', data.rv);
+            fillInput('imoveis', data.imoveis);
+            fillInput('cripto', data.cripto);
+            fillInput('internacional', data.internacional);
+            fillInput('outros_ativos', data.outros_ativos);
+            fillInput('metaVal', data.metaVal);
+            
+            fillInput('salario', data.salario);
+            fillInput('moradia', data.moradia);
+            fillInput('alimentacao', data.alimentacao);
+            fillInput('cartao', data.cartao);
+            fillInput('lazer', data.lazer);
+            fillInput('outros_gastos', data.outros_gastos);
+
+            fillInput('calcInit', data.calcInit);
+            fillInput('calcMonth', data.calcMonth);
+            
+            // Campos numéricos diretos (sem mascara R$)
+            document.getElementById('txJuros').value = data.txJuros || 10;
+            document.getElementById('txInf').value = data.txInf || 0;
+            document.getElementById('tempo').value = data.tempo || 10;
+        }
+
+        function saveAllData() {
+            const data = {
+                rf: parseMoney(document.getElementById('rf').value),
+                reserva: parseMoney(document.getElementById('reserva').value),
+                rv: parseMoney(document.getElementById('rv').value),
+                imoveis: parseMoney(document.getElementById('imoveis').value),
+                cripto: parseMoney(document.getElementById('cripto').value),
+                internacional: parseMoney(document.getElementById('internacional').value),
+                outros_ativos: parseMoney(document.getElementById('outros_ativos').value),
+                metaVal: parseMoney(document.getElementById('metaVal').value),
+
+                salario: parseMoney(document.getElementById('salario').value),
+                moradia: parseMoney(document.getElementById('moradia').value),
+                alimentacao: parseMoney(document.getElementById('alimentacao').value),
+                cartao: parseMoney(document.getElementById('cartao').value),
+                lazer: parseMoney(document.getElementById('lazer').value),
+                outros_gastos: parseMoney(document.getElementById('outros_gastos').value),
+
+                calcInit: parseMoney(document.getElementById('calcInit').value),
+                calcMonth: parseMoney(document.getElementById('calcMonth').value),
+                txJuros: document.getElementById('txJuros').value,
+                txInf: document.getElementById('txInf').value,
+                tempo: document.getElementById('tempo').value
+            };
+            localStorage.setItem('clearviewData', JSON.stringify(data));
+        }
+
+        function fillInput(id, val) {
+            const el = document.getElementById(id);
+            if(el) {
+                // Aplica formatação de moeda para os campos que precisam
+                el.value = val.toFixed(2).replace('.', '');
+                mask(el);
+            }
+        }
+
+        // --- 3. FUNÇÕES AUXILIARES ---
         const parseMoney = (val) => {
             if(!val) return 0;
             if(typeof val === 'number') return val;
@@ -366,38 +467,42 @@
             i.value = 'R$ ' + v;
         }
 
-        // --- CHART INSTANCES ---
+        // --- 4. GRÁFICOS E LÓGICA ---
         let donutChart = null;
         let lineChart = null;
 
-        // --- ATUALIZAR ATIVOS ---
         function updateAssets() {
             const rf = parseMoney(document.getElementById('rf').value);
+            const reserva = parseMoney(document.getElementById('reserva').value);
             const rv = parseMoney(document.getElementById('rv').value);
-            const im = parseMoney(document.getElementById('imoveis').value);
-            const cr = parseMoney(document.getElementById('cripto').value);
-            const total = rf + rv + im + cr;
+            const imoveis = parseMoney(document.getElementById('imoveis').value);
+            const cripto = parseMoney(document.getElementById('cripto').value);
+            const inter = parseMoney(document.getElementById('internacional').value);
+            const outros = parseMoney(document.getElementById('outros_ativos').value);
+            
+            const total = rf + reserva + rv + imoveis + cripto + inter + outros;
             const meta = parseMoney(document.getElementById('metaVal').value);
 
-            // Textos
+            // Display
             document.getElementById('displayTotal').innerText = formatBRL(total);
             document.getElementById('headerTotal').innerText = formatBRL(total);
 
-            // Barra de Progresso
+            // Barra Progresso
             let pct = 0;
             if(meta > 0) pct = (total / meta) * 100;
             if(pct > 100) pct = 100;
             document.getElementById('progBar').style.width = pct + '%';
             document.getElementById('percText').innerText = pct.toFixed(1) + '%';
 
-            // Update Chart Pizza
+            // Chart Update
             if(donutChart) {
-                donutChart.data.datasets[0].data = [rf, rv, im, cr];
+                donutChart.data.datasets[0].data = [rf, reserva, rv, imoveis, cripto, inter, outros];
                 donutChart.update();
             }
+
+            saveAllData(); // Salvar
         }
 
-        // --- ATUALIZAR FLUXO ---
         function updateFlow() {
             const sal = parseMoney(document.getElementById('salario').value);
             let despesas = 0;
@@ -407,42 +512,35 @@
             const el = document.getElementById('valInvest');
             el.innerText = formatBRL(sobra);
             el.style.color = sobra < 0 ? 'var(--danger)' : 'var(--accent)';
+
+            saveAllData(); // Salvar
         }
 
-        // --- CÁLCULO PROJEÇÃO ---
         function calculateProjection() {
-            // Inputs
             const P = parseMoney(document.getElementById('calcInit').value);
             const PMT = parseMoney(document.getElementById('calcMonth').value);
             let tempo = parseFloat(document.getElementById('tempo').value);
             let juros = parseFloat(document.getElementById('txJuros').value);
             let inflacao = parseFloat(document.getElementById('txInf').value);
             
-            // Seletores
-            const tipoTempo = document.getElementById('selTempo').value; // anos ou meses
-            const tipoJuros = document.getElementById('selJuros').value; // aa ou am
-            const tipoInf = document.getElementById('selInf').value; // aa ou am
+            const tipoTempo = document.getElementById('selTempo').value;
+            const tipoJuros = document.getElementById('selJuros').value;
+            const tipoInf = document.getElementById('selInf').value;
 
-            // Normalizar para MENSAL
             let meses = (tipoTempo === 'anos') ? tempo * 12 : tempo;
-            
-            // Converter taxas para mensal (Juros Compostos: (1+i)^(1/12) - 1)
             let i_m = (tipoJuros === 'aa') ? (Math.pow(1 + juros/100, 1/12) - 1) : (juros/100);
             let inf_m = (tipoInf === 'aa') ? (Math.pow(1 + inflacao/100, 1/12) - 1) : (inflacao/100);
 
-            // Arrays para o Gráfico
             let labels = [];
             let dataTotal = [];
             let dataInvest = [];
-            let dataReal = []; // Ajustado inflação
+            let dataReal = [];
 
             let currentTotal = P;
             let currentInvest = P;
             let currentReal = P;
 
-            // Loop mês a mês
             for(let m = 0; m <= meses; m++) {
-                // Adiciona ao gráfico apenas ano a ano (para não ficar pesado) ou mês a mês se for curto
                 if(meses > 60) {
                     if(m % 12 === 0) {
                         labels.push(`Ano ${m/12}`);
@@ -457,37 +555,30 @@
                     dataReal.push(currentReal);
                 }
 
-                // Cálculo Financeiro
-                // 1. Rendimento do mês
                 currentTotal = currentTotal * (1 + i_m);
-                // 2. Desvalorização da inflação (Cálculo simplificado de poder de compra)
-                // Poder de compra cai pela inflação
                 currentReal = currentReal * (1 + i_m) / (1 + inf_m); 
 
-                // 3. Aporte
-                if(m < meses) { // Aporte acontece no final do mes
+                if(m < meses) {
                     currentTotal += PMT;
                     currentInvest += PMT;
-                    currentReal += PMT; // Aporte novo tem valor presente cheio no momento do aporte
+                    currentReal += PMT;
                 }
             }
 
-            // Exibir Resultados Numéricos
             document.getElementById('projContainer').style.display = 'block';
             document.getElementById('resFinal').innerText = formatBRL(currentTotal);
             document.getElementById('resInvestido').innerText = formatBRL(currentInvest);
-            document.getElementById('resJuros').innerText = formatBRL(currentTotal - currentInvest); // Ganho Nominal
-            document.getElementById('resReal').innerText = formatBRL(currentReal); // Poder de compra
+            document.getElementById('resJuros').innerText = formatBRL(currentReal - currentInvest); // Ganho Real aprox
+            document.getElementById('resReal').innerText = formatBRL(currentReal);
 
-            // Gerar Gráfico de Linha
             renderLineChart(labels, dataTotal, dataInvest, dataReal);
+            saveAllData(); // Salvar
         }
 
         function renderLineChart(lbls, dTotal, dInvest, dReal) {
             const ctx = document.getElementById('lineChart').getContext('2d');
             if(lineChart) lineChart.destroy();
 
-            // Gradiente Amarelo
             let gradient = ctx.createLinearGradient(0, 0, 0, 400);
             gradient.addColorStop(0, 'rgba(255, 204, 0, 0.5)');
             gradient.addColorStop(1, 'rgba(255, 204, 0, 0.0)');
@@ -497,29 +588,9 @@
                 data: {
                     labels: lbls,
                     datasets: [
-                        {
-                            label: 'Patrimônio Nominal',
-                            data: dTotal,
-                            borderColor: '#ffcc00',
-                            backgroundColor: gradient,
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Total Investido',
-                            data: dInvest,
-                            borderColor: '#ffffff',
-                            borderDash: [5, 5], // Tracejado
-                            tension: 0.4,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'Poder de Compra (Real)',
-                            data: dReal,
-                            borderColor: '#00e676', // Verde
-                            tension: 0.4,
-                            pointRadius: 0
-                        }
+                        { label: 'Patrimônio', data: dTotal, borderColor: '#ffcc00', backgroundColor: gradient, fill: true, tension: 0.4 },
+                        { label: 'Investido', data: dInvest, borderColor: '#ffffff', borderDash: [5, 5], tension: 0.4, pointRadius: 0 },
+                        { label: 'Poder Compra', data: dReal, borderColor: '#00e676', tension: 0.4, pointRadius: 0 }
                     ]
                 },
                 options: {
@@ -528,49 +599,38 @@
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
                         legend: { labels: { color: '#ccc', font: {size: 10} } },
-                        tooltip: { 
-                            callbacks: { label: function(c){ return ' ' + c.dataset.label + ': ' + c.raw.toLocaleString('pt-BR',{style:'currency', currency:'BRL'}); } }
-                        }
+                        tooltip: { callbacks: { label: function(c){ return ' ' + c.dataset.label + ': ' + c.raw.toLocaleString('pt-BR',{style:'currency', currency:'BRL'}); } } }
                     },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#666' } },
-                        y: { grid: { color: '#222' }, ticks: { color: '#666', callback: function(value) { return value/1000 + 'k'; } } }
+                        y: { grid: { color: '#222' }, ticks: { color: '#666', callback: function(val) { return val/1000 + 'k'; } } }
                     }
                 }
             });
         }
 
-        // --- INIT ---
         window.onload = function() {
-            // Setup Inicial Inputs
-            document.querySelectorAll('.money-input').forEach(i => {
-                mask(i); // Aplica mascara inicial
-            });
-            document.querySelectorAll('.calc-input-styled').forEach(i => {
-                if(i.id.includes('Init') || i.id.includes('Month')) mask(i);
-            });
-
-            // Init Donut
+            loadData(); // Carrega dados do LocalStorage ou Defaults
+            
             const ctxD = document.getElementById('assetsChart').getContext('2d');
             donutChart = new Chart(ctxD, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Renda Fixa', 'Renda Variável', 'Imóveis', 'Cripto'],
+                    labels: ['RF', 'Reserva', 'RV', 'Imóveis', 'Cripto', 'Inter.', 'Outros'],
                     datasets: [{
-                        data: [1, 1, 0, 0], // Dummy start
-                        backgroundColor: ['#ffcc00', '#333333', '#ffffff', '#666666'],
+                        data: [1,0,1,0,0,0,0], 
+                        backgroundColor: ['#ffcc00', '#00e676', '#333333', '#ffffff', '#666666', '#00bfff', '#ff5252'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { color: '#888', font:{size:10}, boxWidth:10 } } },
+                    plugins: { legend: { position: 'bottom', labels: { color: '#888', font:{size:9}, boxWidth:8 } } },
                     cutout: '70%'
                 }
             });
 
-            // Run Updates
             updateAssets();
             updateFlow();
         };
@@ -578,5 +638,3 @@
     </script>
 </body>
 </html>
-
-
