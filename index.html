@@ -100,15 +100,19 @@
         }
         .money-input:focus { color: var(--accent); }
 
-        /* FLUXO MENSAL */
+        /* FLUXO MENSAL - ESTILOS ESPECÍFICOS */
         .cat-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 5px;
             cursor: pointer; border: 1px solid #333; transition: all 0.2s;
         }
         .cat-header:active { transform: scale(0.98); }
+        /* Título Normal */
         .cat-title { font-size: 0.9rem; font-weight: 400; color: #eee; display: flex; align-items: center; gap: 8px; }
+        
+        /* TOTAL EM NEGRITO E BRANCO */
         .cat-total { font-size: 0.9rem; color: #ffffff; font-weight: 700; }
+        
         .arrow { font-size: 0.7rem; transition: transform 0.3s; color: #666; }
         .cat-header.active .arrow { transform: rotate(180deg); }
         .cat-header.active { border-color: var(--accent); }
@@ -128,20 +132,37 @@
         }
         .expense-row:last-child { border-bottom: none; }
         
+        /* Nome do Gasto sem negrito */
         .lbl-input {
             background: transparent; border: none; color: #ccc; font-size: 0.8rem; width: 100%;
             border-bottom: 1px solid transparent; transition: 0.3s; font-weight: 400;
         }
         .lbl-input:focus { border-bottom: 1px solid var(--accent); color: white; }
         
+        /* BOX UNIFICADA PARA VALOR E PAGAMENTO */
         .box-input, .pay-select {
-            background: #222; color: #fff; border: 1px solid #333; border-radius: 4px;
-            font-size: 0.75rem; padding: 8px 4px; width: 100%; text-align: center;
+            background: #222; 
+            color: #fff;
+            border: 1px solid #333; 
+            border-radius: 4px;
+            font-size: 0.75rem; 
+            padding: 8px 4px; 
+            width: 100%; 
+            text-align: center;
+            
+            /* VALOR EM NEGRITO */
             font-weight: 700; 
-            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
         }
         
-        .box-input:focus, .pay-select:focus { border-color: var(--accent); outline: none; }
+        .box-input:focus, .pay-select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
         .pay-select { font-weight: 400; color: #ccc; } 
 
         /* OUTROS */
@@ -205,7 +226,7 @@
 
     <div class="greeting-section">
         <div class="greeting">Olá,</div>
-        <div class="client-name">Fernando Sanga</div>
+        <div class="client-name">Cliente</div>
     </div>
 
     <div class="card">
@@ -417,7 +438,7 @@
         };
 
         function loadData() {
-            const saved = localStorage.getItem('clearview_template_master_v6'); 
+            const saved = localStorage.getItem('clearview_template_master_v14'); 
             const data = saved ? JSON.parse(saved) : defaults;
 
             // Ativos e Meta
@@ -481,7 +502,7 @@
                 fluxoLabels: fluxoLabels,
                 fluxoPays: fluxoPays
             };
-            localStorage.setItem('clearview_template_master_v6', JSON.stringify(data));
+            localStorage.setItem('clearview_template_master_v14', JSON.stringify(data));
         }
 
         function fillInput(id, val) { const el = document.getElementById(id); if(el) { el.value = val.toFixed(2).replace('.', ''); mask(el); } }
@@ -535,12 +556,23 @@
         }
 
         function calculateProjection() {
+            const getFloat = (id) => {
+                let val = document.getElementById(id).value;
+                if(!val) return 0;
+                val = val.replace(',', '.'); 
+                return parseFloat(val) || 0; 
+            };
+
             const P = parseMoney(document.getElementById('calcInit').value);
             const PMT = parseMoney(document.getElementById('calcMonth').value);
-            const tempo = parseFloat(document.getElementById('tempo').value);
-            const juros = parseFloat(document.getElementById('txJuros').value);
-            const inflacao = parseFloat(document.getElementById('txInf').value);
+            const tempo = getFloat('tempo');
+            const juros = getFloat('txJuros');
+            const inflacao = getFloat('txInf');
+
+            if (tempo === 0) return;
+
             let meses = document.getElementById('selTempo').value === 'anos' ? tempo * 12 : tempo;
+            // Taxa mensal equivalente
             let i_m = document.getElementById('selJuros').value === 'aa' ? (Math.pow(1 + juros/100, 1/12) - 1) : (juros/100);
             let inf_m = document.getElementById('selInf').value === 'aa' ? (Math.pow(1 + inflacao/100, 1/12) - 1) : (inflacao/100);
 
@@ -548,19 +580,28 @@
             let cTotal = P, cInvest = P, cReal = P;
 
             for(let m = 0; m <= meses; m++) {
-                if(meses > 60 && m % 12 !== 0 && m !== meses) continue;
-                labels.push(meses > 60 ? `Ano ${Math.floor(m/12)}` : m);
-                dTotal.push(cTotal); dInvest.push(cInvest); dReal.push(cReal);
+                
+                // 1. ADD TO CHART (CONDITIONAL)
+                if(meses <= 60 || m % 12 === 0 || m === meses) {
+                    if (meses > 60) labels.push(`Ano ${Math.floor(m/12)}`);
+                    else labels.push(m);
+                    dTotal.push(cTotal);
+                    dInvest.push(cInvest);
+                    dReal.push(cReal);
+                }
+
+                // 2. CALCULATE NEXT MONTH (ALWAYS RUNS)
                 if(m < meses) {
                     cTotal = cTotal * (1 + i_m) + PMT;
                     cInvest += PMT;
                     cReal = (cReal * (1 + i_m) / (1 + inf_m)) + PMT;
                 }
             }
+            
             document.getElementById('projContainer').style.display = 'block';
             document.getElementById('resFinal').innerText = formatBRL(cTotal);
             document.getElementById('resInvestido').innerText = formatBRL(cInvest);
-            document.getElementById('resJuros').innerText = formatBRL(cReal - cInvest);
+            document.getElementById('resJuros').innerText = formatBRL(cReal - cInvest); // Aproximação ganho real
             document.getElementById('resReal').innerText = formatBRL(cReal);
             renderLineChart(labels, dTotal, dInvest, dReal);
             saveAllData();
