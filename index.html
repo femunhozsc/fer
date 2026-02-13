@@ -12,14 +12,14 @@
             --bg-black: #050505;
             --card-bg: #111111;
             --card-border: #222222;
-            --accent: #ffcc00;     /* Amarelo Principal */
-            --accent-dark: #b38f00; /* Amarelo Escuro/Ouro */
+            --accent: #ffcc00;      /* Amarelo Principal */
+            --accent-dark: #917400; /* Amarelo Reserva (NOVO) */
             --text-main: #ffffff;
             --text-sec: #888888;
             --success: #00e676;
             --danger: #ff5252;
-            --sober-blue: #3e5c76; /* Azul Petróleo */
-            --sober-red: #8a3a3a;  /* Vermelho Vinho */
+            --sober-blue: #3c75a7;  /* Azul Inter (NOVO) */
+            --sober-red: #861818;   /* Vermelho Outros (NOVO) */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; }
@@ -46,7 +46,7 @@
             z-index: 100;
         }
 
-        .logo-img { height: 35px; display: block; } /* Tamanho original menor */
+        .logo-img { height: 35px; display: block; }
         
         .hamburger {
             font-size: 1.5rem;
@@ -419,7 +419,7 @@
         };
 
         function loadData() {
-            const saved = localStorage.getItem('clearviewData_v2'); // mudei a chave pra resetar bugs antigos
+            const saved = localStorage.getItem('clearviewData_v2'); 
             const data = saved ? JSON.parse(saved) : defaults;
 
             ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal',
@@ -622,12 +622,12 @@
                         data: [1,1,1,1,1,1,1], 
                         backgroundColor: [
                             '#ffcc00', // RF (Amarelo Principal)
-                            '#b38f00', // Reserva (Ouro Escuro - Novo)
+                            '#917400', // Reserva (Atualizado)
                             '#333333', // RV (Grafite)
                             '#ffffff', // Imoveis (Branco)
                             '#666666', // Cripto (Cinza)
-                            '#3e5c76', // Internacional (Azul Petróleo - Novo)
-                            '#8a3a3a'  // Outros (Vermelho Sóbrio - Novo)
+                            '#3c75a7', // Internacional (Atualizado)
+                            '#861818'  // Outros (Atualizado)
                         ],
                         borderWidth: 0
                     }]
