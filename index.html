@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Clearview - Dashboard</title>
+    
+    <title>Clearview - Fernando Sanga</title>
+    
     <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo.png">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#050505">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             /* --- CORES BASE --- */
@@ -19,15 +30,14 @@
             --success: #00e676;
             --danger: #ff5252;
 
-            /* --- NOVA PALETA DE ATIVOS (PREMIUM) --- */
-            /* Essa paleta usa tons de ouro, metal e monocromático para não "brigar" com o fundo */
-            --c-rf: #ffcc00;       /* Ouro (Marca) */
-            --c-reserva: #ffe680;  /* Champagne/Creme */
-            --c-rv: #ffffff;       /* Branco Puro */
+            /* --- PALETA PREMIUM --- */
+            --c-rf: #ffcc00;       /* Ouro */
+            --c-reserva: #ffe680;  /* Creme */
+            --c-rv: #ffffff;       /* Branco */
             --c-imov: #d1d1d1;     /* Prata */
-            --c-cripto: #787878;   /* Cinza Médio */
+            --c-cripto: #787878;   /* Cinza */
             --c-inter: #4a4a4a;    /* Grafite */
-            --c-outros: #8c6e00;   /* Bronze Antigo */
+            --c-outros: #8c6e00;   /* Bronze */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; }
@@ -37,7 +47,7 @@
             color: var(--text-main);
             padding: 20px;
             padding-top: 80px;
-            padding-bottom: 50px;
+            padding-bottom: 40px;
         }
 
         /* NAVBAR */
@@ -50,7 +60,7 @@
         .logo-img { height: 35px; display: block; }
         .hamburger { font-size: 1.5rem; background: none; border: none; color: white; cursor: pointer; }
 
-        /* MENU LATERAL */
+        /* MENU */
         .sidenav {
             height: 100%; width: 0; position: fixed; z-index: 200; top: 0; right: 0;
             background-color: #111; overflow-x: hidden; transition: 0.3s;
@@ -122,7 +132,7 @@
         .calc-label { display: block; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 5px; }
         .custom-select { background: #222; border: 1px solid #333; color: white; padding: 2px 5px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; }
         .calc-input-styled { width: 100%; background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-size: 1rem; }
-        .btn-calc { width: 100%; background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 8px; font-weight: 700; margin-top: 15px; font-size: 1rem; cursor: pointer;}
+        .btn-calc { width: 100%; background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 8px; font-weight: 700; margin-top: 15px; font-size: 1rem; cursor: pointer; }
 
         /* PROJECTION */
         .projection-container { margin-top: 30px; display: none; border-top: 1px dashed #333; padding-top: 20px; }
@@ -131,6 +141,16 @@
         .stat-box { background: #181818; padding: 10px; border-radius: 8px; text-align: center; }
         .stat-val { display: block; font-weight: bold; color: white; font-size: 0.9rem; }
         .stat-lbl { font-size: 0.7rem; color: #777; }
+
+        /* FOOTER COPYRIGHT */
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-sec);
+            margin-top: 40px;
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
@@ -257,18 +277,25 @@
         </div>
     </div>
 
+    <footer>
+        &copy; 2026 Clearview Capital. Todos os direitos reservados.
+    </footer>
+
     <script>
         function openNav() { document.getElementById("mySidenav").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidenav").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
 
+        // --- DADOS PERSONALIZADOS (LUIS FELIPE) ---
         const defaults = {
-            rf: 10000, reserva: 0, rv: 5000, imoveis: 0, cripto: 0, internacional: 0, outros_ativos: 0,
-            metaVal: 350000, salario: 2500, moradia: 800, alimentacao: 200, cartao: 200, lazer: 300, outros_gastos: 0,
-            calcInit: 15000, calcMonth: 1000, txJuros: 10, txInf: 0, tempo: 10
+            rf: 5000, reserva: 5000, rv: 0, imoveis: 0, cripto: 5000, internacional: 0, outros_ativos: 2000,
+            metaVal: 300000,
+            salario: 2000, moradia: 800, alimentacao: 300, cartao: 200, lazer: 200, outros_gastos: 100,
+            calcInit: 17000, calcMonth: 400, txJuros: 10, txInf: 0, tempo: 10
         };
 
         function loadData() {
-            const saved = localStorage.getItem('clearviewData_v2'); 
+            // Chave específica para o Luis para manter os dados dele separados
+            const saved = localStorage.getItem('clearview_luis'); 
             const data = saved ? JSON.parse(saved) : defaults;
             ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal','salario','moradia','alimentacao','cartao','lazer','outros_gastos','calcInit','calcMonth']
              .forEach(id => fillInput(id, data[id] !== undefined ? data[id] : defaults[id] || 0));
@@ -287,7 +314,7 @@
                 calcInit: getVal('calcInit'), calcMonth: getVal('calcMonth'),
                 txJuros: document.getElementById('txJuros').value, txInf: document.getElementById('txInf').value, tempo: document.getElementById('tempo').value
             };
-            localStorage.setItem('clearviewData_v2', JSON.stringify(data));
+            localStorage.setItem('clearview_luis', JSON.stringify(data));
         }
 
         function fillInput(id, val) { const el = document.getElementById(id); if(el) { el.value = val.toFixed(2).replace('.', ''); mask(el); } }
@@ -381,16 +408,7 @@
                     labels: ['RF', 'Reserva', 'RV', 'Imóveis', 'Cripto', 'Inter.', 'Outros'],
                     datasets: [{
                         data: [1,1,1,1,1,1,1], 
-                        // CORES PREMIUM
-                        backgroundColor: [
-                            '#ffcc00', // RF (Ouro)
-                            '#ffe680', // Reserva (Creme)
-                            '#ffffff', // RV (Branco)
-                            '#d1d1d1', // Imóveis (Prata)
-                            '#787878', // Cripto (Cinza)
-                            '#4a4a4a', // Inter (Grafite)
-                            '#8c6e00'  // Outros (Bronze)
-                        ],
+                        backgroundColor: ['#ffcc00', '#ffe680', '#ffffff', '#d1d1d1', '#787878', '#4a4a4a', '#8c6e00'],
                         borderWidth: 0
                     }]
                 },
