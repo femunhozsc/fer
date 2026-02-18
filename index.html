@@ -100,19 +100,15 @@
         }
         .money-input:focus { color: var(--accent); }
 
-        /* FLUXO MENSAL - ESTILOS ESPECÍFICOS */
+        /* FLUXO MENSAL */
         .cat-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 5px;
             cursor: pointer; border: 1px solid #333; transition: all 0.2s;
         }
         .cat-header:active { transform: scale(0.98); }
-        /* Título Normal */
         .cat-title { font-size: 0.9rem; font-weight: 400; color: #eee; display: flex; align-items: center; gap: 8px; }
-        
-        /* TOTAL EM NEGRITO E BRANCO */
         .cat-total { font-size: 0.9rem; color: #ffffff; font-weight: 700; }
-        
         .arrow { font-size: 0.7rem; transition: transform 0.3s; color: #666; }
         .cat-header.active .arrow { transform: rotate(180deg); }
         .cat-header.active { border-color: var(--accent); }
@@ -125,44 +121,26 @@
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* LINHA DE DESPESA */
         .expense-row {
             display: grid; grid-template-columns: 1.5fr 1fr 0.8fr; gap: 8px; align-items: center;
             margin-bottom: 12px; border-bottom: 1px solid #222; padding-bottom: 8px;
         }
         .expense-row:last-child { border-bottom: none; }
         
-        /* Nome do Gasto sem negrito */
         .lbl-input {
             background: transparent; border: none; color: #ccc; font-size: 0.8rem; width: 100%;
             border-bottom: 1px solid transparent; transition: 0.3s; font-weight: 400;
         }
         .lbl-input:focus { border-bottom: 1px solid var(--accent); color: white; }
         
-        /* BOX UNIFICADA PARA VALOR E PAGAMENTO */
         .box-input, .pay-select {
-            background: #222; 
-            color: #fff;
-            border: 1px solid #333; 
-            border-radius: 4px;
-            font-size: 0.75rem; 
-            padding: 8px 4px; 
-            width: 100%; 
-            text-align: center;
-            
-            /* VALOR EM NEGRITO */
+            background: #222; color: #fff; border: 1px solid #333; border-radius: 4px;
+            font-size: 0.75rem; padding: 8px 4px; width: 100%; text-align: center;
             font-weight: 700; 
-            
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
         }
         
-        .box-input:focus, .pay-select:focus {
-            border-color: var(--accent);
-            outline: none;
-        }
-
+        .box-input:focus, .pay-select:focus { border-color: var(--accent); outline: none; }
         .pay-select { font-weight: 400; color: #ccc; } 
 
         /* OUTROS */
@@ -189,6 +167,63 @@
             border-radius: 8px; font-size: 0.8rem; margin-top: 15px; cursor: pointer;
         }
         .btn-reset:active { background: #333; color: white; }
+
+        /* BUTTON ADD GASTO RAPIDO */
+        .btn-quick-add {
+            width: 100%;
+            background: rgba(255, 204, 0, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-quick-add:active { background: var(--accent); color: black; }
+
+        /* MODAL GASTO RAPIDO */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 300; display: none;
+            justify-content: center; align-items: flex-end; /* Bottom sheet effect */
+        }
+        .modal-content {
+            background: #151515;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px 20px 0 0;
+            padding: 25px;
+            border-top: 1px solid #333;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .modal-title { color: white; font-size: 1.1rem; margin-bottom: 20px; text-align: center; }
+        
+        .modal-input-lg {
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--accent);
+            color: var(--accent); font-size: 2rem; text-align: center; font-weight: bold;
+            margin-bottom: 25px; padding-bottom: 10px;
+        }
+        .modal-select {
+            width: 100%; background: #222; color: white; border: 1px solid #333;
+            padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 1rem;
+            appearance: none; -webkit-appearance: none;
+        }
+        .btn-confirm-add {
+            width: 100%; background: var(--accent); color: black; font-weight: bold;
+            padding: 15px; border-radius: 10px; border: none; font-size: 1rem; margin-top: 10px;
+        }
+        .btn-close-modal {
+            background: none; border: none; color: #666; width: 100%; padding: 10px; margin-top: 10px;
+        }
 
         /* CALCULATOR */
         .calc-grid { display: grid; gap: 10px; }
@@ -255,6 +290,8 @@
         <div class="card-title">Fluxo Mensal</div>
         <div class="input-group"><span class="input-label" style="color:var(--success)">Salário Líquido</span><input type="tel" class="money-input" id="salario" style="color:var(--success)" onkeyup="mask(this); updateFlow()"></div>
         
+        <button class="btn-quick-add" onclick="openAddModal()">+ Adicionar Gasto Rápido</button>
+
         <div style="margin: 15px 0; border-top: 1px dashed #333;"></div>
 
         <div class="cat-header" onclick="toggleCat('moradia')">
@@ -400,11 +437,45 @@
 
     <footer>&copy; 2026 Clearview Capital. Todos os direitos reservados.</footer>
 
+    <div id="addModal" class="modal-overlay" onclick="if(event.target === this) closeAddModal()">
+        <div class="modal-content">
+            <h3 class="modal-title">Adicionar Gasto Rápido</h3>
+            
+            <input type="tel" id="quickValue" class="modal-input-lg" placeholder="R$ 0,00">
+            
+            <select id="quickCat" class="modal-select" onchange="updateSubcats()">
+                <option value="" disabled selected>Selecione a Categoria</option>
+                <option value="moradia">Moradia</option>
+                <option value="transporte">Transporte</option>
+                <option value="saude">Saúde</option>
+                <option value="obrigacoes">Obrigações</option>
+                <option value="vida">Vida Diária</option>
+                <option value="entret">Entretenimento</option>
+                <option value="economias">Economias</option>
+            </select>
+            
+            <select id="quickSub" class="modal-select" disabled>
+                <option value="" disabled selected>Selecione o Item</option>
+            </select>
+
+            <select id="quickPay" class="modal-select">
+                <option value="" disabled selected>Método (Opcional)</option>
+                <option>Pix</option>
+                <option>Cartão Crédito</option>
+                <option>Cartão Débito</option>
+                <option>Boleto</option>
+                <option>Dinheiro</option>
+            </select>
+
+            <button class="btn-confirm-add" onclick="processAddExpense()">ADD</button>
+            <button class="btn-close-modal" onclick="closeAddModal()">Cancelar</button>
+        </div>
+    </div>
+
     <script>
         function openNav() { document.getElementById("mySidenav").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidenav").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
 
-        // --- EXPANDIR CATEGORIAS ---
         function toggleCat(catId) {
             const content = document.getElementById('cat-' + catId);
             const header = content.previousElementSibling;
@@ -412,36 +483,173 @@
             header.classList.toggle('active');
         }
 
-        // --- ZERAR FLUXO (MENOS SALARIO E ALUGUEL) ---
         function resetFlow() {
             if(!confirm("Tem certeza que deseja zerar os gastos do mês?")) return;
-            
-            // Zera despesas e pagamentos (inputs que não são o Salario e o Aluguel)
             document.querySelectorAll('.expense-input, .eco-input').forEach(input => {
-                if(input.id !== 'val_m_1') { // Mantém Aluguel
-                    input.value = '';
-                }
+                if(input.id !== 'val_m_1') input.value = '';
             });
             document.querySelectorAll('.pay-select').forEach(sel => {
-                if(sel.id !== 'pay_m_1') { // Mantém pgto Aluguel
-                    sel.value = '';
-                }
+                if(sel.id !== 'pay_m_1') sel.value = '';
             });
-            
             updateFlow();
         }
 
-        // --- DADOS DO TEMPLATE (ZERADOS) ---
+        // --- MAPA DE IDs PARA O GASTO RÁPIDO ---
+        const expenseMap = {
+            'moradia': [
+                {id: 'val_m_1', name: 'Aluguel/Parcela', lbl: 'lbl_m_1', pay: 'pay_m_1'},
+                {id: 'val_m_2', name: 'Seguros', lbl: 'lbl_m_2', pay: 'pay_m_2'},
+                {id: 'val_m_3', name: 'Conta de Luz', lbl: 'lbl_m_3', pay: 'pay_m_3'},
+                {id: 'val_m_4', name: 'Conta de Água', lbl: 'lbl_m_4', pay: 'pay_m_4'},
+                {id: 'val_m_5', name: 'Telefone', lbl: 'lbl_m_5', pay: 'pay_m_5'},
+                {id: 'val_m_6', name: 'Streaming', lbl: 'lbl_m_6', pay: 'pay_m_6'},
+                {id: 'val_m_7', name: 'Internet', lbl: 'lbl_m_7', pay: 'pay_m_7'},
+                {id: 'val_m_8', name: 'Eletrodomésticos', lbl: 'lbl_m_8', pay: 'pay_m_8'},
+                {id: 'val_m_9', name: 'Melhorias', lbl: 'lbl_m_9', pay: 'pay_m_9'},
+                {id: 'val_m_10', name: 'Outros', lbl: 'lbl_m_10', pay: 'pay_m_10'}
+            ],
+            'transporte': [
+                {id: 'val_t_1', name: 'Parcela Carro', lbl: 'lbl_t_1', pay: 'pay_t_1'},
+                {id: 'val_t_2', name: 'Seguro Carro', lbl: 'lbl_t_2', pay: 'pay_t_2'},
+                {id: 'val_t_3', name: 'Combustível', lbl: 'lbl_t_3', pay: 'pay_t_3'},
+                {id: 'val_t_4', name: 'Ônibus/App', lbl: 'lbl_t_4', pay: 'pay_t_4'},
+                {id: 'val_t_5', name: 'Outros', lbl: 'lbl_t_5', pay: 'pay_t_5'}
+            ],
+            'saude': [
+                {id: 'val_s_1', name: 'Seguro Vida', lbl: 'lbl_s_1', pay: 'pay_s_1'},
+                {id: 'val_s_2', name: 'Consulta', lbl: 'lbl_s_2', pay: 'pay_s_2'},
+                {id: 'val_s_3', name: 'Dentista', lbl: 'lbl_s_3', pay: 'pay_s_3'},
+                {id: 'val_s_4', name: 'Medicamentos', lbl: 'lbl_s_4', pay: 'pay_s_4'},
+                {id: 'val_s_5', name: 'Veterinário', lbl: 'lbl_s_5', pay: 'pay_s_5'},
+                {id: 'val_s_6', name: 'Outros', lbl: 'lbl_s_6', pay: 'pay_s_6'}
+            ],
+            'obrigacoes': [
+                {id: 'val_o_1', name: 'Dívidas', lbl: 'lbl_o_1', pay: 'pay_o_1'},
+                {id: 'val_o_2', name: 'Empréstimo Estudantil', lbl: 'lbl_o_2', pay: 'pay_o_2'},
+                {id: 'val_o_3', name: 'Outros Empréstimos', lbl: 'lbl_o_3', pay: 'pay_o_3'},
+                {id: 'val_o_4', name: 'Cartão de Crédito', lbl: 'lbl_o_4', pay: 'pay_o_4'},
+                {id: 'val_o_5', name: 'Taxas e Impostos', lbl: 'lbl_o_5', pay: 'pay_o_5'},
+                {id: 'val_o_6', name: 'Outros', lbl: 'lbl_o_6', pay: 'pay_o_6'}
+            ],
+            'vida': [
+                {id: 'val_v_1', name: 'Supermercado', lbl: 'lbl_v_1', pay: 'pay_v_1'},
+                {id: 'val_v_2', name: 'Suprimentos Pessoais', lbl: 'lbl_v_2', pay: 'pay_v_2'},
+                {id: 'val_v_3', name: 'Roupas', lbl: 'lbl_v_3', pay: 'pay_v_3'},
+                {id: 'val_v_4', name: 'Produtos de Limpeza', lbl: 'lbl_v_4', pay: 'pay_v_4'},
+                {id: 'val_v_5', name: 'Jantar/Comer Fora', lbl: 'lbl_v_5', pay: 'pay_v_5'},
+                {id: 'val_v_6', name: 'Salão/Barbearia', lbl: 'lbl_v_6', pay: 'pay_v_6'},
+                {id: 'val_v_7', name: 'PetShop', lbl: 'lbl_v_7', pay: 'pay_v_7'},
+                {id: 'val_v_8', name: 'Outros', lbl: 'lbl_v_8', pay: 'pay_v_8'}
+            ],
+            'entret': [
+                {id: 'val_e_1', name: 'Filmes/Cinema', lbl: 'lbl_e_1', pay: 'pay_e_1'},
+                {id: 'val_e_2', name: 'Música', lbl: 'lbl_e_2', pay: 'pay_e_2'},
+                {id: 'val_e_3', name: 'Games', lbl: 'lbl_e_3', pay: 'pay_e_3'},
+                {id: 'val_e_4', name: 'Show', lbl: 'lbl_e_4', pay: 'pay_e_4'},
+                {id: 'val_e_5', name: 'Livros', lbl: 'lbl_e_5', pay: 'pay_e_5'},
+                {id: 'val_e_6', name: 'Hobbies', lbl: 'lbl_e_6', pay: 'pay_e_6'},
+                {id: 'val_e_7', name: 'Esportes', lbl: 'lbl_e_7', pay: 'pay_e_7'},
+                {id: 'val_e_8', name: 'Academia', lbl: 'lbl_e_8', pay: 'pay_e_8'},
+                {id: 'val_e_9', name: 'Passeios', lbl: 'lbl_e_9', pay: 'pay_e_9'},
+                {id: 'val_e_10', name: 'Férias', lbl: 'lbl_e_10', pay: 'pay_e_10'},
+                {id: 'val_e_11', name: 'Viagem', lbl: 'lbl_e_11', pay: 'pay_e_11'},
+                {id: 'val_e_12', name: 'Teatro', lbl: 'lbl_e_12', pay: 'pay_e_12'},
+                {id: 'val_e_13', name: 'Outros', lbl: 'lbl_e_13', pay: 'pay_e_13'}
+            ],
+            'economias': [
+                {id: 'val_ec_1', name: 'Para Reserva', lbl: 'lbl_ec_1', pay: null},
+                {id: 'val_ec_2', name: 'Para Investimentos', lbl: 'lbl_ec_2', pay: null},
+                {id: 'val_ec_3', name: 'Outros', lbl: 'lbl_ec_3', pay: null}
+            ]
+        };
+
+        // --- LÓGICA DO MODAL ---
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'flex';
+            document.getElementById('quickValue').value = '';
+            document.getElementById('quickCat').value = '';
+            document.getElementById('quickSub').innerHTML = '<option value="" disabled selected>Selecione o Item</option>';
+            document.getElementById('quickSub').disabled = true;
+            document.getElementById('quickPay').value = '';
+            setTimeout(() => document.getElementById('quickValue').focus(), 100);
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+        }
+
+        function updateSubcats() {
+            const cat = document.getElementById('quickCat').value;
+            const subSelect = document.getElementById('quickSub');
+            subSelect.innerHTML = '<option value="" disabled selected>Selecione o Item</option>';
+            
+            if (expenseMap[cat]) {
+                expenseMap[cat].forEach((item, index) => {
+                    // Tenta pegar o nome atual do label (caso o usuario tenha editado)
+                    let currentLabel = item.name;
+                    const lblEl = document.getElementById(item.lbl);
+                    if(lblEl && lblEl.value) currentLabel = lblEl.value;
+
+                    const option = document.createElement('option');
+                    option.value = index; // Armazena o índice do array
+                    option.text = currentLabel;
+                    subSelect.appendChild(option);
+                });
+                subSelect.disabled = false;
+            } else {
+                subSelect.disabled = true;
+            }
+        }
+
+        function processAddExpense() {
+            const valStr = document.getElementById('quickValue').value;
+            const cat = document.getElementById('quickCat').value;
+            const subIdx = document.getElementById('quickSub').value;
+            const payMethod = document.getElementById('quickPay').value;
+
+            if (!valStr || !cat || subIdx === "") {
+                alert("Por favor, preencha valor, categoria e item.");
+                return;
+            }
+
+            // 1. Converter valor digitado para float
+            // Aceita 100, 100.50 ou 100,50
+            let amount = parseFloat(valStr.replace(',', '.'));
+            if (isNaN(amount)) { alert("Valor inválido"); return; }
+
+            // 2. Identificar o Input de Destino
+            const targetItem = expenseMap[cat][subIdx];
+            const targetInput = document.getElementById(targetItem.id);
+            const targetPay = targetItem.pay ? document.getElementById(targetItem.pay) : null;
+
+            // 3. Somar ao valor existente
+            let currentVal = parseMoney(targetInput.value);
+            let newVal = currentVal + amount;
+
+            // 4. Atualizar o Input
+            targetInput.value = (newVal * 100).toFixed(0); // mask espera valor limpo
+            mask(targetInput); // Formata para R$
+
+            // 5. Atualizar Pagamento (Se selecionado e existir campo)
+            if (payMethod && targetPay) {
+                targetPay.value = payMethod;
+            }
+
+            // 6. Salvar e Recalcular
+            updateFlow();
+            saveAllData();
+            closeAddModal();
+        }
+
         const defaults = {
             rf: 0, reserva: 0, rv: 0, imoveis: 0, cripto: 0, internacional: 0, outros_ativos: 0,
             metaVal: 0, salario: 0, calcInit: 0, calcMonth: 0, txJuros: 10, txInf: 0, tempo: 10
         };
 
         function loadData() {
-            const saved = localStorage.getItem('clearview_template_master_v14'); 
+            const saved = localStorage.getItem('clearview_template_master_v15'); 
             const data = saved ? JSON.parse(saved) : defaults;
 
-            // Ativos e Meta
             ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal','salario','calcInit','calcMonth']
              .forEach(id => fillInput(id, data[id] !== undefined ? data[id] : defaults[id] || 0));
             
@@ -449,48 +657,17 @@
             document.getElementById('txInf').value = data.txInf || 0;
             document.getElementById('tempo').value = data.tempo || 10;
 
-            // Carregar Fluxo Dinâmico (Inputs de Valor)
-            if(data.fluxoValues) {
-                for (const [id, val] of Object.entries(data.fluxoValues)) {
-                    fillInput(id, val);
-                }
-            }
-            // Carregar Labels Editados
-            if(data.fluxoLabels) {
-                for (const [id, txt] of Object.entries(data.fluxoLabels)) {
-                    const el = document.getElementById(id);
-                    if(el) el.value = txt;
-                }
-            }
-            // Carregar Pagamentos
-            if(data.fluxoPays) {
-                for (const [id, val] of Object.entries(data.fluxoPays)) {
-                    const el = document.getElementById(id);
-                    if(el) el.value = val;
-                }
-            }
+            if(data.fluxoValues) for (const [id, val] of Object.entries(data.fluxoValues)) fillInput(id, val);
+            if(data.fluxoLabels) for (const [id, txt] of Object.entries(data.fluxoLabels)) { const el = document.getElementById(id); if(el) el.value = txt; }
+            if(data.fluxoPays) for (const [id, val] of Object.entries(data.fluxoPays)) { const el = document.getElementById(id); if(el) el.value = val; }
         }
 
         function saveAllData() {
             const getVal = (id) => parseMoney(document.getElementById(id).value);
-            
-            // Coletar dados dinâmicos do fluxo
-            let fluxoValues = {};
-            let fluxoLabels = {};
-            let fluxoPays = {};
-
-            // Valores
-            document.querySelectorAll('.expense-input, .eco-input').forEach(el => {
-                fluxoValues[el.id] = parseMoney(el.value);
-            });
-            // Labels
-            document.querySelectorAll('.lbl-input').forEach(el => {
-                fluxoLabels[el.id] = el.value;
-            });
-            // Pagamentos
-            document.querySelectorAll('.pay-select').forEach(el => {
-                fluxoPays[el.id] = el.value;
-            });
+            let fluxoValues = {}, fluxoLabels = {}, fluxoPays = {};
+            document.querySelectorAll('.expense-input, .eco-input').forEach(el => fluxoValues[el.id] = parseMoney(el.value));
+            document.querySelectorAll('.lbl-input').forEach(el => fluxoLabels[el.id] = el.value);
+            document.querySelectorAll('.pay-select').forEach(el => fluxoPays[el.id] = el.value);
 
             const data = {
                 rf: getVal('rf'), reserva: getVal('reserva'), rv: getVal('rv'), imoveis: getVal('imoveis'),
@@ -498,11 +675,9 @@
                 metaVal: getVal('metaVal'), salario: getVal('salario'),
                 calcInit: getVal('calcInit'), calcMonth: getVal('calcMonth'),
                 txJuros: document.getElementById('txJuros').value, txInf: document.getElementById('txInf').value, tempo: document.getElementById('tempo').value,
-                fluxoValues: fluxoValues,
-                fluxoLabels: fluxoLabels,
-                fluxoPays: fluxoPays
+                fluxoValues: fluxoValues, fluxoLabels: fluxoLabels, fluxoPays: fluxoPays
             };
-            localStorage.setItem('clearview_template_master_v14', JSON.stringify(data));
+            localStorage.setItem('clearview_template_master_v15', JSON.stringify(data));
         }
 
         function fillInput(id, val) { const el = document.getElementById(id); if(el) { el.value = val.toFixed(2).replace('.', ''); mask(el); } }
@@ -520,36 +695,24 @@
             document.getElementById('headerTotal').innerText = formatBRL(total);
             let pct = meta > 0 ? (total/meta)*100 : 0; if(pct>100) pct=100;
             document.getElementById('progBar').style.width = pct + '%'; document.getElementById('percText').innerText = pct.toFixed(1) + '%';
-
             if(donutChart) { donutChart.data.datasets[0].data = vals; donutChart.update(); }
             saveAllData();
         }
 
         function updateFlow() {
             const sal = parseMoney(document.getElementById('salario').value);
-            
-            // Somar Despesas (exclui eco-input)
             let desp = 0;
-            // Objeto para guardar totais por categoria
             let catTotals = { moradia:0, transporte:0, saude:0, obrigacoes:0, vida:0, entret:0, economias:0 };
-
             document.querySelectorAll('.expense-input').forEach(e => {
                 let val = parseMoney(e.value);
                 desp += val;
                 if(e.dataset.cat) catTotals[e.dataset.cat] += val;
             });
-
-            // Somar Economias (separado)
-            document.querySelectorAll('.eco-input').forEach(e => {
-                catTotals['economias'] += parseMoney(e.value);
-            });
-
-            // Atualizar Totais nas Headers
+            document.querySelectorAll('.eco-input').forEach(e => catTotals['economias'] += parseMoney(e.value));
             for (const [cat, total] of Object.entries(catTotals)) {
                 const el = document.getElementById('tot-' + cat);
                 if(el) el.innerText = formatBRL(total);
             }
-
             const sobra = sal - desp;
             const el = document.getElementById('valInvest'); el.innerText = formatBRL(sobra); el.style.color = sobra < 0 ? 'var(--danger)' : 'var(--accent)';
             saveAllData();
@@ -572,7 +735,6 @@
             if (tempo === 0) return;
 
             let meses = document.getElementById('selTempo').value === 'anos' ? tempo * 12 : tempo;
-            // Taxa mensal equivalente
             let i_m = document.getElementById('selJuros').value === 'aa' ? (Math.pow(1 + juros/100, 1/12) - 1) : (juros/100);
             let inf_m = document.getElementById('selInf').value === 'aa' ? (Math.pow(1 + inflacao/100, 1/12) - 1) : (inflacao/100);
 
@@ -580,8 +742,6 @@
             let cTotal = P, cInvest = P, cReal = P;
 
             for(let m = 0; m <= meses; m++) {
-                
-                // 1. ADD TO CHART (CONDITIONAL)
                 if(meses <= 60 || m % 12 === 0 || m === meses) {
                     if (meses > 60) labels.push(`Ano ${Math.floor(m/12)}`);
                     else labels.push(m);
@@ -589,8 +749,6 @@
                     dInvest.push(cInvest);
                     dReal.push(cReal);
                 }
-
-                // 2. CALCULATE NEXT MONTH (ALWAYS RUNS)
                 if(m < meses) {
                     cTotal = cTotal * (1 + i_m) + PMT;
                     cInvest += PMT;
@@ -601,7 +759,7 @@
             document.getElementById('projContainer').style.display = 'block';
             document.getElementById('resFinal').innerText = formatBRL(cTotal);
             document.getElementById('resInvestido').innerText = formatBRL(cInvest);
-            document.getElementById('resJuros').innerText = formatBRL(cReal - cInvest); // Aproximação ganho real
+            document.getElementById('resJuros').innerText = formatBRL(cReal - cInvest); 
             document.getElementById('resReal').innerText = formatBRL(cReal);
             renderLineChart(labels, dTotal, dInvest, dReal);
             saveAllData();
