@@ -88,7 +88,7 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* INPUTS PADRÃO (TOPO) */
+        /* INPUTS PADRÃO */
         .input-group {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
             background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px;
@@ -100,7 +100,7 @@
         }
         .money-input:focus { color: var(--accent); }
 
-        /* FLUXO MENSAL */
+        /* FLUXO MENSAL - ESTILOS */
         .cat-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 5px;
@@ -170,48 +170,42 @@
 
         /* BUTTON ADD GASTO RAPIDO */
         .btn-quick-add {
-            width: 100%;
-            background: rgba(255, 204, 0, 0.1);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
+            width: 100%; background: rgba(255, 204, 0, 0.1); color: var(--accent);
+            border: 1px solid var(--accent); padding: 12px; border-radius: 8px;
+            font-weight: 600; margin-top: 10px; margin-bottom: 20px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s;
         }
         .btn-quick-add:active { background: var(--accent); color: black; }
 
-        /* MODAL GASTO RAPIDO */
+        /* MODAL */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 300; display: none;
-            justify-content: center; align-items: flex-end; /* Bottom sheet effect */
+            justify-content: center; align-items: flex-end;
         }
         .modal-content {
-            background: #151515;
-            width: 100%;
-            max-width: 500px;
-            border-radius: 20px 20px 0 0;
-            padding: 25px;
-            border-top: 1px solid #333;
-            animation: slideUp 0.3s ease;
+            background: #151515; width: 100%; max-width: 500px;
+            border-radius: 20px 20px 0 0; padding: 25px; border-top: 1px solid #333;
+            /* Animação de entrada */
+            animation: slideUp 0.3s ease forwards;
         }
+        
+        /* Animação de Entrada e Saída */
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes slideDownModal { from { transform: translateY(0); } to { transform: translateY(100%); } }
 
         .modal-title { color: white; font-size: 1.1rem; margin-bottom: 20px; text-align: center; }
         
+        /* Input Grande do Modal */
         .modal-input-lg {
             width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--accent);
-            color: var(--accent); font-size: 2rem; text-align: center; font-weight: bold;
+            color: #ffffff; /* FONTE BRANCA */
+            font-size: 2rem; text-align: center; font-weight: bold;
             margin-bottom: 25px; padding-bottom: 10px;
         }
+        /* Placeholder mais escuro */
+        .modal-input-lg::placeholder { color: #444; }
+
         .modal-select {
             width: 100%; background: #222; color: white; border: 1px solid #333;
             padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 1rem;
@@ -441,7 +435,7 @@
         <div class="modal-content">
             <h3 class="modal-title">Adicionar Gasto Rápido</h3>
             
-            <input type="tel" id="quickValue" class="modal-input-lg" placeholder="R$ 0,00">
+            <input type="tel" id="quickValue" class="modal-input-lg" placeholder="R$ 0,00" inputmode="numeric" onkeyup="mask(this)">
             
             <select id="quickCat" class="modal-select" onchange="updateSubcats()">
                 <option value="" disabled selected>Selecione a Categoria</option>
@@ -467,7 +461,7 @@
                 <option>Dinheiro</option>
             </select>
 
-            <button class="btn-confirm-add" onclick="processAddExpense()">ADD</button>
+            <button class="btn-confirm-add" onclick="processAddExpense()">Adicionar Gasto</button>
             <button class="btn-close-modal" onclick="closeAddModal()">Cancelar</button>
         </div>
     </div>
@@ -476,11 +470,25 @@
         function openNav() { document.getElementById("mySidenav").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidenav").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
 
+        // --- EXPANDIR CATEGORIAS (COM FECHAMENTO AUTOMÁTICO) ---
         function toggleCat(catId) {
-            const content = document.getElementById('cat-' + catId);
-            const header = content.previousElementSibling;
-            content.classList.toggle('show');
-            header.classList.toggle('active');
+            const allContents = document.querySelectorAll('.cat-content');
+            const allHeaders = document.querySelectorAll('.cat-header');
+            
+            const targetContent = document.getElementById('cat-' + catId);
+            const targetHeader = targetContent.previousElementSibling;
+            
+            const isAlreadyOpen = targetContent.classList.contains('show');
+
+            // Fecha todos
+            allContents.forEach(c => c.classList.remove('show'));
+            allHeaders.forEach(h => h.classList.remove('active'));
+
+            // Abre o alvo se não estava aberto
+            if (!isAlreadyOpen) {
+                targetContent.classList.add('show');
+                targetHeader.classList.add('active');
+            }
         }
 
         function resetFlow() {
@@ -566,16 +574,29 @@
         // --- LÓGICA DO MODAL ---
         function openAddModal() {
             document.getElementById('addModal').style.display = 'flex';
-            document.getElementById('quickValue').value = '';
+            const valInput = document.getElementById('quickValue');
+            valInput.value = '';
             document.getElementById('quickCat').value = '';
             document.getElementById('quickSub').innerHTML = '<option value="" disabled selected>Selecione o Item</option>';
             document.getElementById('quickSub').disabled = true;
             document.getElementById('quickPay').value = '';
-            setTimeout(() => document.getElementById('quickValue').focus(), 100);
+            
+            // Foco automático com pequeno delay para mobile
+            setTimeout(() => {
+                valInput.focus();
+            }, 100);
         }
 
         function closeAddModal() {
-            document.getElementById('addModal').style.display = 'none';
+            const modalContent = document.querySelector('.modal-content');
+            // Ativar animação de saída
+            modalContent.style.animation = 'slideDownModal 0.3s forwards';
+            
+            // Esperar animação terminar antes de esconder
+            setTimeout(() => {
+                document.getElementById('addModal').style.display = 'none';
+                modalContent.style.animation = ''; // Resetar animação para a próxima vez
+            }, 300);
         }
 
         function updateSubcats() {
@@ -585,13 +606,12 @@
             
             if (expenseMap[cat]) {
                 expenseMap[cat].forEach((item, index) => {
-                    // Tenta pegar o nome atual do label (caso o usuario tenha editado)
                     let currentLabel = item.name;
                     const lblEl = document.getElementById(item.lbl);
                     if(lblEl && lblEl.value) currentLabel = lblEl.value;
 
                     const option = document.createElement('option');
-                    option.value = index; // Armazena o índice do array
+                    option.value = index; 
                     option.text = currentLabel;
                     subSelect.appendChild(option);
                 });
@@ -612,30 +632,26 @@
                 return;
             }
 
-            // 1. Converter valor digitado para float
-            // Aceita 100, 100.50 ou 100,50
-            let amount = parseFloat(valStr.replace(',', '.'));
+            // Converter valor (remove 'R$', pontos de milhar e troca vírgula por ponto)
+            let cleanVal = valStr.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+            let amount = parseFloat(cleanVal);
+            
             if (isNaN(amount)) { alert("Valor inválido"); return; }
 
-            // 2. Identificar o Input de Destino
             const targetItem = expenseMap[cat][subIdx];
             const targetInput = document.getElementById(targetItem.id);
             const targetPay = targetItem.pay ? document.getElementById(targetItem.pay) : null;
 
-            // 3. Somar ao valor existente
             let currentVal = parseMoney(targetInput.value);
             let newVal = currentVal + amount;
 
-            // 4. Atualizar o Input
-            targetInput.value = (newVal * 100).toFixed(0); // mask espera valor limpo
-            mask(targetInput); // Formata para R$
+            targetInput.value = (newVal * 100).toFixed(0); 
+            mask(targetInput); 
 
-            // 5. Atualizar Pagamento (Se selecionado e existir campo)
             if (payMethod && targetPay) {
                 targetPay.value = payMethod;
             }
 
-            // 6. Salvar e Recalcular
             updateFlow();
             saveAllData();
             closeAddModal();
@@ -647,7 +663,7 @@
         };
 
         function loadData() {
-            const saved = localStorage.getItem('clearview_template_master_v15'); 
+            const saved = localStorage.getItem('clearview_template_master_v16'); 
             const data = saved ? JSON.parse(saved) : defaults;
 
             ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal','salario','calcInit','calcMonth']
@@ -677,7 +693,7 @@
                 txJuros: document.getElementById('txJuros').value, txInf: document.getElementById('txInf').value, tempo: document.getElementById('tempo').value,
                 fluxoValues: fluxoValues, fluxoLabels: fluxoLabels, fluxoPays: fluxoPays
             };
-            localStorage.setItem('clearview_template_master_v15', JSON.stringify(data));
+            localStorage.setItem('clearview_template_master_v16', JSON.stringify(data));
         }
 
         function fillInput(id, val) { const el = document.getElementById(id); if(el) { el.value = val.toFixed(2).replace('.', ''); mask(el); } }
