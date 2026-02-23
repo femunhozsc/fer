@@ -236,26 +236,29 @@
         .stat-lbl { font-size: 0.7rem; color: #777; }
 
         footer { text-align: center; font-size: 0.7rem; color: var(--text-sec); margin-top: 40px; opacity: 0.6; letter-spacing: 0.5px; }
+
+        /* SYNC STATUS */
+        .sync-status { font-size: 0.7rem; color: #666; transition: color 0.3s; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <img src="logo.png" alt="Clearview" class="logo-img">
-        <button class="hamburger" onclick="openNav()">&#9776;</button>
+        <span id="sync-status" class="sync-status"></span><button class="hamburger" onclick="openNav()">&#9776;</button>
     </nav>
 
     <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <div class="menu-title">Canais de Atendimento</div>
         <a href="https://wa.me/44991293357" target="_blank"><span>📱</span> WhatsApp</a>
-        <a href="mailto:contato@clearviewcapital.com.br"><span>✉️</span> E-mail</a>
+        <a href="/cdn-cgi/l/email-protection#c8aba7a6bca9bca788aba4ada9babea1adbfaba9b8a1bca9a4e6aba7a5e6aaba"><span>✉️</span> E-mail</a>
     </div>
     <div id="overlay" class="overlay-bg" onclick="closeNav()"></div>
 
     <div class="greeting-section">
         <div class="greeting">Olá,</div>
-        <div class="client-name">Cliente</div>
+        <div class="client-name">Fernando Sanga</div>
     </div>
 
     <div class="card">
@@ -466,25 +469,163 @@
         </div>
     </div>
 
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // =============================================
+        // CONFIGURAÇÃO DO CLIENTE — ALTERE APENAS AQUI
+        // =============================================
+        const CLIENT_ID = "fernando_sanga";
+        // =============================================
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmLOM3oS6PPHL1617j0iKtMuV2vTGylwI",
+            authDomain: "clearview-4a460.firebaseapp.com",
+            projectId: "clearview-4a460",
+            storageBucket: "clearview-4a460.firebasestorage.app",
+            messagingSenderId: "986661522432",
+            appId: "1:986661522432:web:15d61bbbaad7ec3d6c9ce5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Mostra indicador de status
+        function setStatus(msg, color) {
+            const el = document.getElementById('sync-status');
+            if(el) { el.innerText = msg; el.style.color = color; }
+        }
+
+        // Salva no Firestore (com debounce de 1.5s para não sobrecarregar)
+        let saveTimer;
+        window.saveAllData = function() {
+            // Coleta dados da tela
+            const getVal = (id) => parseMoney(document.getElementById(id).value);
+            let fluxoValues = {}, fluxoLabels = {}, fluxoPays = {};
+            document.querySelectorAll('.expense-input, .eco-input').forEach(el => fluxoValues[el.id] = parseMoney(el.value));
+            document.querySelectorAll('.lbl-input').forEach(el => fluxoLabels[el.id] = el.value);
+            document.querySelectorAll('.pay-select').forEach(el => fluxoPays[el.id] = el.value);
+
+            const data = {
+                rf: getVal('rf'), reserva: getVal('reserva'), rv: getVal('rv'), imoveis: getVal('imoveis'),
+                cripto: getVal('cripto'), internacional: getVal('internacional'), outros_ativos: getVal('outros_ativos'),
+                metaVal: getVal('metaVal'), salario: getVal('salario'),
+                calcInit: getVal('calcInit'), calcMonth: getVal('calcMonth'),
+                txJuros: document.getElementById('txJuros').value,
+                txInf: document.getElementById('txInf').value,
+                tempo: document.getElementById('tempo').value,
+                fluxoValues, fluxoLabels, fluxoPays,
+                updatedAt: new Date().toISOString()
+            };
+
+            // Também salva localmente como backup offline
+            localStorage.setItem('clearview_backup', JSON.stringify(data));
+
+            // Debounce: aguarda 1.5s de inatividade antes de salvar no Firebase
+            clearTimeout(saveTimer);
+            setStatus('⏳ Salvando...', '#888');
+            saveTimer = setTimeout(async () => {
+                try {
+                    await setDoc(doc(db, "clientes", CLIENT_ID, "dados", "dashboard"), data);
+                    setStatus('✓ Salvo na nuvem', '#00e676');
+                    setTimeout(() => setStatus('', '#888'), 3000);
+                } catch(e) {
+                    console.error("Erro ao salvar:", e);
+                    setStatus('⚠ Salvo só localmente', '#ffcc00');
+                }
+            }, 1500);
+        };
+
+        // Carrega do Firestore (com fallback para localStorage)
+        window.loadData = async function() {
+            setStatus('⏳ Carregando...', '#888');
+            const defaults = {
+                rf: 0, reserva: 0, rv: 0, imoveis: 0, cripto: 0, internacional: 0, outros_ativos: 0,
+                metaVal: 0, salario: 0, calcInit: 0, calcMonth: 0, txJuros: 10, txInf: 0, tempo: 10
+            };
+
+            let data = defaults;
+            try {
+                const snap = await getDoc(doc(db, "clientes", CLIENT_ID, "dados", "dashboard"));
+                if(snap.exists()) {
+                    data = snap.data();
+                    setStatus('✓ Dados carregados', '#00e676');
+                } else {
+                    // Tenta fallback do localStorage
+                    const local = localStorage.getItem('clearview_backup');
+                    if(local) data = { ...defaults, ...JSON.parse(local) };
+                    setStatus('Novo usuário', '#888');
+                }
+            } catch(e) {
+                console.error("Erro ao carregar:", e);
+                const local = localStorage.getItem('clearview_backup');
+                if(local) data = { ...defaults, ...JSON.parse(local) };
+                setStatus('⚠ Modo offline', '#ffcc00');
+            }
+
+            // Preenche os campos
+            ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal','salario','calcInit','calcMonth']
+                .forEach(id => fillInput(id, data[id] !== undefined ? data[id] : defaults[id] || 0));
+
+            document.getElementById('txJuros').value = data.txJuros || 10;
+            document.getElementById('txInf').value = data.txInf || 0;
+            document.getElementById('tempo').value = data.tempo || 10;
+
+            if(data.fluxoValues) for (const [id, val] of Object.entries(data.fluxoValues)) fillInput(id, val);
+            if(data.fluxoLabels) for (const [id, txt] of Object.entries(data.fluxoLabels)) { const el = document.getElementById(id); if(el) el.value = txt; }
+            if(data.fluxoPays) for (const [id, val] of Object.entries(data.fluxoPays)) { const el = document.getElementById(id); if(el) el.value = val; }
+
+            setTimeout(() => setStatus('', '#888'), 4000);
+
+            // Inicializa os gráficos depois de carregar
+            initCharts();
+        };
+
+        function initCharts() {
+            const ctxD = document.getElementById('assetsChart').getContext('2d');
+            window.donutChart = new Chart(ctxD, {
+                type: 'doughnut',
+                data: {
+                    labels: ['RF', 'Reserva', 'RV', 'Imóveis', 'Cripto', 'Inter.', 'Outros'],
+                    datasets: [{
+                        data: [0,0,0,0,0,0,0],
+                        backgroundColor: ['#ffcc00', '#ffe680', '#ffffff', '#d1d1d1', '#787878', '#4a4a4a', '#8c6e00'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#aaa', boxWidth: 12, padding: 10 } },
+                        tooltip: { callbacks: { label: c => ' ' + c.label + ': ' + c.raw.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) } }
+                    }
+                }
+            });
+            updateAssets();
+            updateFlow();
+        }
+
+        // Inicializa quando a página carregar
+        window.addEventListener('load', () => {
+            loadData();
+        });
+    </script>
+
     <script>
         function openNav() { document.getElementById("mySidenav").style.width = "250px"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidenav").style.width = "0"; document.getElementById("overlay").style.display = "none"; }
 
-        // --- EXPANDIR CATEGORIAS (COM FECHAMENTO AUTOMÁTICO) ---
         function toggleCat(catId) {
             const allContents = document.querySelectorAll('.cat-content');
             const allHeaders = document.querySelectorAll('.cat-header');
-            
             const targetContent = document.getElementById('cat-' + catId);
             const targetHeader = targetContent.previousElementSibling;
-            
             const isAlreadyOpen = targetContent.classList.contains('show');
-
-            // Fecha todos
             allContents.forEach(c => c.classList.remove('show'));
             allHeaders.forEach(h => h.classList.remove('active'));
-
-            // Abre o alvo se não estava aberto
             if (!isAlreadyOpen) {
                 targetContent.classList.add('show');
                 targetHeader.classList.add('active');
@@ -493,16 +634,11 @@
 
         function resetFlow() {
             if(!confirm("Tem certeza que deseja zerar os gastos do mês?")) return;
-            document.querySelectorAll('.expense-input, .eco-input').forEach(input => {
-                if(input.id !== 'val_m_1') input.value = '';
-            });
-            document.querySelectorAll('.pay-select').forEach(sel => {
-                if(sel.id !== 'pay_m_1') sel.value = '';
-            });
+            document.querySelectorAll('.expense-input, .eco-input').forEach(input => { if(input.id !== 'val_m_1') input.value = ''; });
+            document.querySelectorAll('.pay-select').forEach(sel => { if(sel.id !== 'pay_m_1') sel.value = ''; });
             updateFlow();
         }
 
-        // --- MAPA DE IDs PARA O GASTO RÁPIDO ---
         const expenseMap = {
             'moradia': [
                 {id: 'val_m_1', name: 'Aluguel/Parcela', lbl: 'lbl_m_1', pay: 'pay_m_1'},
@@ -571,7 +707,6 @@
             ]
         };
 
-        // --- LÓGICA DO MODAL ---
         function openAddModal() {
             document.getElementById('addModal').style.display = 'flex';
             const valInput = document.getElementById('quickValue');
@@ -580,22 +715,15 @@
             document.getElementById('quickSub').innerHTML = '<option value="" disabled selected>Selecione o Item</option>';
             document.getElementById('quickSub').disabled = true;
             document.getElementById('quickPay').value = '';
-            
-            // Foco automático com pequeno delay para mobile
-            setTimeout(() => {
-                valInput.focus();
-            }, 100);
+            setTimeout(() => { valInput.focus(); }, 100);
         }
 
         function closeAddModal() {
             const modalContent = document.querySelector('.modal-content');
-            // Ativar animação de saída
             modalContent.style.animation = 'slideDownModal 0.3s forwards';
-            
-            // Esperar animação terminar antes de esconder
             setTimeout(() => {
                 document.getElementById('addModal').style.display = 'none';
-                modalContent.style.animation = ''; // Resetar animação para a próxima vez
+                modalContent.style.animation = '';
             }, 300);
         }
 
@@ -603,15 +731,13 @@
             const cat = document.getElementById('quickCat').value;
             const subSelect = document.getElementById('quickSub');
             subSelect.innerHTML = '<option value="" disabled selected>Selecione o Item</option>';
-            
             if (expenseMap[cat]) {
                 expenseMap[cat].forEach((item, index) => {
                     let currentLabel = item.name;
                     const lblEl = document.getElementById(item.lbl);
                     if(lblEl && lblEl.value) currentLabel = lblEl.value;
-
                     const option = document.createElement('option');
-                    option.value = index; 
+                    option.value = index;
                     option.text = currentLabel;
                     subSelect.appendChild(option);
                 });
@@ -626,74 +752,21 @@
             const cat = document.getElementById('quickCat').value;
             const subIdx = document.getElementById('quickSub').value;
             const payMethod = document.getElementById('quickPay').value;
-
-            if (!valStr || !cat || subIdx === "") {
-                alert("Por favor, preencha valor, categoria e item.");
-                return;
-            }
-
-            // Converter valor (remove 'R$', pontos de milhar e troca vírgula por ponto)
+            if (!valStr || !cat || subIdx === "") { alert("Por favor, preencha valor, categoria e item."); return; }
             let cleanVal = valStr.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
             let amount = parseFloat(cleanVal);
-            
             if (isNaN(amount)) { alert("Valor inválido"); return; }
-
             const targetItem = expenseMap[cat][subIdx];
             const targetInput = document.getElementById(targetItem.id);
             const targetPay = targetItem.pay ? document.getElementById(targetItem.pay) : null;
-
             let currentVal = parseMoney(targetInput.value);
             let newVal = currentVal + amount;
-
-            targetInput.value = (newVal * 100).toFixed(0); 
-            mask(targetInput); 
-
-            if (payMethod && targetPay) {
-                targetPay.value = payMethod;
-            }
-
+            targetInput.value = (newVal * 100).toFixed(0);
+            mask(targetInput);
+            if (payMethod && targetPay) { targetPay.value = payMethod; }
             updateFlow();
             saveAllData();
             closeAddModal();
-        }
-
-        const defaults = {
-            rf: 0, reserva: 0, rv: 0, imoveis: 0, cripto: 0, internacional: 0, outros_ativos: 0,
-            metaVal: 0, salario: 0, calcInit: 0, calcMonth: 0, txJuros: 10, txInf: 0, tempo: 10
-        };
-
-        function loadData() {
-            const saved = localStorage.getItem('clearview_template_master_v16'); 
-            const data = saved ? JSON.parse(saved) : defaults;
-
-            ['rf','reserva','rv','imoveis','cripto','internacional','outros_ativos','metaVal','salario','calcInit','calcMonth']
-             .forEach(id => fillInput(id, data[id] !== undefined ? data[id] : defaults[id] || 0));
-            
-            document.getElementById('txJuros').value = data.txJuros || 10;
-            document.getElementById('txInf').value = data.txInf || 0;
-            document.getElementById('tempo').value = data.tempo || 10;
-
-            if(data.fluxoValues) for (const [id, val] of Object.entries(data.fluxoValues)) fillInput(id, val);
-            if(data.fluxoLabels) for (const [id, txt] of Object.entries(data.fluxoLabels)) { const el = document.getElementById(id); if(el) el.value = txt; }
-            if(data.fluxoPays) for (const [id, val] of Object.entries(data.fluxoPays)) { const el = document.getElementById(id); if(el) el.value = val; }
-        }
-
-        function saveAllData() {
-            const getVal = (id) => parseMoney(document.getElementById(id).value);
-            let fluxoValues = {}, fluxoLabels = {}, fluxoPays = {};
-            document.querySelectorAll('.expense-input, .eco-input').forEach(el => fluxoValues[el.id] = parseMoney(el.value));
-            document.querySelectorAll('.lbl-input').forEach(el => fluxoLabels[el.id] = el.value);
-            document.querySelectorAll('.pay-select').forEach(el => fluxoPays[el.id] = el.value);
-
-            const data = {
-                rf: getVal('rf'), reserva: getVal('reserva'), rv: getVal('rv'), imoveis: getVal('imoveis'),
-                cripto: getVal('cripto'), internacional: getVal('internacional'), outros_ativos: getVal('outros_ativos'),
-                metaVal: getVal('metaVal'), salario: getVal('salario'),
-                calcInit: getVal('calcInit'), calcMonth: getVal('calcMonth'),
-                txJuros: document.getElementById('txJuros').value, txInf: document.getElementById('txInf').value, tempo: document.getElementById('tempo').value,
-                fluxoValues: fluxoValues, fluxoLabels: fluxoLabels, fluxoPays: fluxoPays
-            };
-            localStorage.setItem('clearview_template_master_v16', JSON.stringify(data));
         }
 
         function fillInput(id, val) { const el = document.getElementById(id); if(el) { el.value = val.toFixed(2).replace('.', ''); mask(el); } }
@@ -710,7 +783,8 @@
             document.getElementById('displayTotal').innerText = formatBRL(total);
             document.getElementById('headerTotal').innerText = formatBRL(total);
             let pct = meta > 0 ? (total/meta)*100 : 0; if(pct>100) pct=100;
-            document.getElementById('progBar').style.width = pct + '%'; document.getElementById('percText').innerText = pct.toFixed(1) + '%';
+            document.getElementById('progBar').style.width = pct + '%';
+            document.getElementById('percText').innerText = pct.toFixed(1) + '%';
             if(donutChart) { donutChart.data.datasets[0].data = vals; donutChart.update(); }
             saveAllData();
         }
@@ -730,40 +804,30 @@
                 if(el) el.innerText = formatBRL(total);
             }
             const sobra = sal - desp;
-            const el = document.getElementById('valInvest'); el.innerText = formatBRL(sobra); el.style.color = sobra < 0 ? 'var(--danger)' : 'var(--accent)';
+            const el = document.getElementById('valInvest');
+            el.innerText = formatBRL(sobra);
+            el.style.color = sobra < 0 ? 'var(--danger)' : 'var(--accent)';
             saveAllData();
         }
 
         function calculateProjection() {
-            const getFloat = (id) => {
-                let val = document.getElementById(id).value;
-                if(!val) return 0;
-                val = val.replace(',', '.'); 
-                return parseFloat(val) || 0; 
-            };
-
+            const getFloat = (id) => { let val = document.getElementById(id).value; if(!val) return 0; val = val.replace(',', '.'); return parseFloat(val) || 0; };
             const P = parseMoney(document.getElementById('calcInit').value);
             const PMT = parseMoney(document.getElementById('calcMonth').value);
             const tempo = getFloat('tempo');
             const juros = getFloat('txJuros');
             const inflacao = getFloat('txInf');
-
             if (tempo === 0) return;
-
             let meses = document.getElementById('selTempo').value === 'anos' ? tempo * 12 : tempo;
             let i_m = document.getElementById('selJuros').value === 'aa' ? (Math.pow(1 + juros/100, 1/12) - 1) : (juros/100);
             let inf_m = document.getElementById('selInf').value === 'aa' ? (Math.pow(1 + inflacao/100, 1/12) - 1) : (inflacao/100);
-
             let labels = [], dTotal = [], dInvest = [], dReal = [];
             let cTotal = P, cInvest = P, cReal = P;
-
             for(let m = 0; m <= meses; m++) {
                 if(meses <= 60 || m % 12 === 0 || m === meses) {
                     if (meses > 60) labels.push(`Ano ${Math.floor(m/12)}`);
                     else labels.push(m);
-                    dTotal.push(cTotal);
-                    dInvest.push(cInvest);
-                    dReal.push(cReal);
+                    dTotal.push(cTotal); dInvest.push(cInvest); dReal.push(cReal);
                 }
                 if(m < meses) {
                     cTotal = cTotal * (1 + i_m) + PMT;
@@ -771,11 +835,10 @@
                     cReal = (cReal * (1 + i_m) / (1 + inf_m)) + PMT;
                 }
             }
-            
             document.getElementById('projContainer').style.display = 'block';
             document.getElementById('resFinal').innerText = formatBRL(cTotal);
             document.getElementById('resInvestido').innerText = formatBRL(cInvest);
-            document.getElementById('resJuros').innerText = formatBRL(cReal - cInvest); 
+            document.getElementById('resJuros').innerText = formatBRL(cReal - cInvest);
             document.getElementById('resReal').innerText = formatBRL(cReal);
             renderLineChart(labels, dTotal, dInvest, dReal);
             saveAllData();
@@ -784,7 +847,9 @@
         function renderLineChart(lbls, dTotal, dInvest, dReal) {
             const ctx = document.getElementById('lineChart').getContext('2d');
             if(lineChart) lineChart.destroy();
-            let grad = ctx.createLinearGradient(0, 0, 0, 400); grad.addColorStop(0, 'rgba(255, 204, 0, 0.5)'); grad.addColorStop(1, 'rgba(255, 204, 0, 0.0)');
+            let grad = ctx.createLinearGradient(0, 0, 0, 400);
+            grad.addColorStop(0, 'rgba(255, 204, 0, 0.5)');
+            grad.addColorStop(1, 'rgba(255, 204, 0, 0.0)');
             lineChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -797,29 +862,14 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-                    plugins: { legend: { labels: { color: '#ccc' } }, tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + c.raw.toLocaleString('pt-BR',{style:'currency', currency:'BRL'}) } } },
+                    plugins: {
+                        legend: { labels: { color: '#ccc' } },
+                        tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + c.raw.toLocaleString('pt-BR',{style:'currency', currency:'BRL'}) } }
+                    },
                     scales: { x: { display: false }, y: { grid: { color: '#222' }, ticks: { color: '#666', callback: v => v/1000 + 'k' } } }
                 }
             });
         }
-
-        window.onload = function() {
-            loadData();
-            const ctxD = document.getElementById('assetsChart').getContext('2d');
-            donutChart = new Chart(ctxD, {
-                type: 'doughnut',
-                data: {
-                    labels: ['RF', 'Reserva', 'RV', 'Imóveis', 'Cripto', 'Inter.', 'Outros'],
-                    datasets: [{
-                        data: [1,1,1,1,1,1,1], 
-                        backgroundColor: ['#ffcc00', '#ffe680', '#ffffff', '#d1d1d1', '#787878', '#4a4a4a', '#8c6e00'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#888', font:{size:9}, boxWidth:8 } } }, cutout: '70%' }
-            });
-            updateAssets(); updateFlow();
-        };
     </script>
 </body>
 </html>
