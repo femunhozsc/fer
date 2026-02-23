@@ -1112,10 +1112,4 @@ function initCharts() {
     });
 }
 
-// ---- SPLASH + INIT ----
-window.addEventListener('load', async function() {
-    var minWait=new Promise(function(r){setTimeout(r,4000);});
-    await Promise.all([minWait, loadData()]);
-    var splash=document.getElementById('splash');
-    splash.classList.add('exit');
-    setTi
+
