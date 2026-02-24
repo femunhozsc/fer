@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clearview Capital</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- SF Pro equivalente: DM Sans — legível, profissional, sem serifas, espírito Apple -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
@@ -5,6 +11,305 @@
 </head>
 <body>
 
+<!-- ============================= SPLASH SCREEN ============================= -->
+<div id="splash">
+    <div class="splash-logo">
+        <img src="logo.png" alt="Clearview Logo">
+    </div>
+    <div class="splash-greeting">
+        <div class="splash-ola">OLÁ</div>
+        <div class="splash-nome">Fernando Sanga</div>
+        <div class="splash-divider"></div>
+    </div>
+    <div class="splash-tagline">Clearview Capital Dashboard</div>
+</div>
+
+<!-- ============================= APP ============================= -->
+<div id="app">
+    <nav class="navbar">
+        <img src="logo.png" alt="Clearview" class="logo-img" onclick="resetToHome()" style="cursor:pointer">
+        <div class="navbar-right">
+            <span id="sync-icon" class="sync-icon"></span>
+            <button class="hamburger" onclick="openNav()">&#9776;</button>
+        </div>
+    </nav>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="menu-title">Atendimento</div>
+        <a href="https://wa.me/44991293357" target="_blank">WhatsApp</a>
+        <a href="mailto:contato@clearviewcapital.com.br">E-mail</a>
+        
+        <div class="dropdown-btn" onclick="toggleDropdown()">Calculadoras <span id="drop-arrow" class="fa-caret-down">&#9660;</span></div>
+        <div class="dropdown-container" id="calcDropdown">
+            <a href="javascript:void(0)" onclick="openCalcMode('simples')">Juros Compostos</a>
+            <a href="javascript:void(0)" onclick="openCalcMode('completa')">Juros Compostos Completa</a>
+        </div>
+    </div>
+    <div id="overlay" class="overlay-bg" onclick="closeNav()"></div>
+
+    <div class="content">
+        <!-- Header do Mês -->
+        <div class="month-header">
+            <div class="month-nav">
+                <button onclick="changeMonth(-1)">&#8249;</button>
+            </div>
+            <div>
+                <div class="month-label" id="monthLabel">--</div>
+                <div class="month-sub">Referência: <span id="mesRefLabel">--</span></div>
+            </div>
+            <div class="month-nav">
+                <button onclick="changeMonth(1)">&#8250;</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" id="tabs-root">
+            <button class="tab-btn active" onclick="switchTab('fluxo',this)">Fluxo</button>
+            <button class="tab-btn" onclick="switchTab('ativos',this)">Ativos</button>
+            <button class="tab-btn" onclick="switchTab('historico',this)">Histórico</button>
+            <button class="tab-btn" onclick="switchTab('projecao',this)">Projeção</button>
+        </div>
+
+        <!-- TAB: FLUXO -->
+        <div id="tab-fluxo" class="tab-content active">
+            <!-- Renda -->
+            <div class="card">
+                <div class="card-title">Entradas <span class="card-title-accent">/ Renda</span></div>
+                <div class="renda-total-box">
+                    <div>
+                        <div class="renda-total-label">Renda Mensal</div>
+                        <div class="renda-total-val" id="rendaTotal">R$ 0,00</div>
+                    </div>
+                    <div class="renda-entries-count" id="rendaCount">0 lançamentos</div>
+                </div>
+                <div id="rendaList"></div>
+                <button class="btn-add-renda" onclick="openRendaModal()">+ Adicionar Renda</button>
+            </div>
+
+            <!-- Gastos -->
+            <div class="card">
+                <div class="card-title">Saídas <span class="card-title-accent">/ Despesas</span></div>
+                <div class="renda-total-box" style="border-color:var(--card-border); background:rgba(255,255,255,0.02);">
+                    <div>
+                        <div class="renda-total-label">Total Gasto</div>
+                        <div class="renda-total-val" id="gastosTotalDisplay" style="color:var(--text-main)">R$ 0,00</div>
+                    </div>
+                </div>
+                <div class="saldo-box positivo" id="saldoBox">
+                    <div>
+                        <div class="saldo-label">Sobra de Caixa</div>
+                        <div class="saldo-val" id="valInvest">R$ 0,00</div>
+                    </div>
+                </div>
+                <button class="btn-renda-hist" id="btn-gastos-toggle" onclick="toggleGastosDetails()" style="margin-top:14px;justify-content:center;font-weight:500;font-size:0.85rem;padding:14px;">Ver Categorias <span class="renda-hist-arrow" style="margin-left:8px">&#9660;</span></button>
+                <div id="gastos-container" style="display:none;margin-top:14px;animation:slideDown 0.25s ease"></div>
+                
+                <!-- Gastos removidos -->
+                <div id="gastos-hist-wrapper">
+                    <div class="gastos-hist-title">Removidos este mes</div>
+                    <div id="gastos-hist-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: ATIVOS -->
+        <div id="tab-ativos" class="tab-content">
+            <div class="card">
+                <div class="card-title">Patrimonio Total</div>
+                <div class="chart-donut-container" id="chartWrap">
+                    <canvas id="assetsChart"></canvas>
+                    <div class="total-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+                        <h3 id="displayTotal">R$ 0,00</h3>
+                        <span>Total Acumulado</span>
+                    </div>
+                </div>
+                <div class="total-center" style="margin-top:10px;margin-bottom:0"><h3 id="headerTotal" style="display:none"></h3></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Posicao Atual</div>
+                <div class="input-group"><span class="input-label" style="color:var(--c-rf)">Renda Fixa</span><input type="tel" class="money-input" id="rf" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                <div class="input-group"><span class="input-label" style="color:var(--c-reserva)">Reserva Emerg.</span><input type="tel" class="money-input" id="reserva" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                <div class="input-group"><span class="input-label" style="color:var(--c-rv)">Renda Variavel</span><input type="tel" class="money-input" id="rv" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                <div class="input-group"><span class="input-label" style="color:var(--c-imov)">Imoveis/FIIs</span><input type="tel" class="money-input" id="imoveis" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                <div class="input-group"><span class="input-label" style="color:var(--c-cripto)">Criptoativos</span><input type="tel" class="money-input" id="cripto" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                <div class="input-group"><span class="input-label" style="color:var(--c-inter)">Internacional</span><input type="tel" class="money-input" id="internacional" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                <div class="input-group"><span class="input-label" style="color:var(--c-outros)">Outros</span><input type="tel" class="money-input" id="outros_ativos" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                
+                <div class="meta-wrapper">
+                    <div class="meta-info"><span>Meta Patrimonial</span><input type="tel" class="meta-input-inline" id="metaVal" placeholder="Definir Meta" oninput="maskInput(this)" onchange="updateAssets()"></div>
+                    <div class="progress-track"><div class="progress-fill" id="progBar"></div></div>
+                    <div style="text-align:right;font-size:0.6rem;color:var(--text-muted);margin-top:4px" id="percText">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: HISTORICO -->
+        <div id="tab-historico" class="tab-content">
+            <div id="historico-container"></div>
+        </div>
+
+        <!-- TAB: PROJECAO -->
+        <div id="tab-projecao" class="tab-content">
+            <div class="card">
+                <div class="card-title">Simulador de Juros Compostos</div>
+                <div class="calc-row">
+                    <div class="col-half"><span class="calc-label">Aporte Inicial</span><input type="tel" class="calc-input-styled" id="calcInit" oninput="maskInput(this)"></div>
+                    <div class="col-half"><span class="calc-label">Aporte Mensal</span><input type="tel" class="calc-input-styled" id="calcMonth" oninput="maskInput(this)"></div>
+                </div>
+                <div class="calc-row">
+                    <div class="col-half">
+                        <span class="calc-label">Taxa Juros <select id="selJuros" class="custom-select"><option value="aa">a.a</option><option value="am">a.m</option></select></span>
+                        <input type="text" inputmode="decimal" class="calc-input-styled" id="txJuros" placeholder="10,0">
+                    </div>
+                    <div class="col-half">
+                        <span class="calc-label">Inflacao <select id="selInf" class="custom-select"><option value="aa">a.a</option><option value="am">a.m</option></select></span>
+                        <input type="text" inputmode="decimal" class="calc-input-styled" id="txInf" placeholder="4,5">
+                    </div>
+                </div>
+                <div class="calc-row">
+                    <div class="col-half">
+                        <span class="calc-label">Periodo <select id="selTempo" class="custom-select"><option value="anos">Anos</option><option value="meses">Meses</option></select></span>
+                        <input type="text" inputmode="numeric" class="calc-input-styled" id="tempo" placeholder="10">
+                    </div>
+                </div>
+                <button class="btn-calc" onclick="calculateProjection()">Calcular Futuro</button>
+                
+                <div class="projection-container" id="projContainer">
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-lbl">Patrimonio Bruto</span><span class="stat-val" style="color:var(--accent)" id="resFinal">--</span></div>
+                        <div class="stat-box"><span class="stat-lbl">Total Investido</span><span class="stat-val" id="resInvestido">--</span></div>
+                        <div class="stat-box"><span class="stat-lbl">Total Juros</span><span class="stat-val" style="color:var(--success)" id="resJuros">--</span></div>
+                        <div class="stat-box"><span class="stat-lbl">Poder de Compra</span><span class="stat-val" style="color:#fff" id="resReal">--</span></div>
+                    </div>
+                    <div class="calc-info" id="calcInfo"></div>
+                    <div class="chart-line-container"><canvas id="lineChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CALCULADORAS (MODO FULLSCREEN) -->
+        <div id="tab-calculadoras" class="tab-content">
+            <div class="calc-fullscreen-header">
+                <button class="calc-back-btn" onclick="resetToHome()">&#8592; Voltar ao Dashboard</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title" id="calc-title-display">Calculadora</div>
+
+                <!-- SIMPLES -->
+                <div id="calc-simples" class="calc-section" style="display:none">
+                    <div class="calc-row">
+                        <div class="col-half"><span class="calc-label">Aporte Inicial</span><input type="tel" class="calc-input-styled" id="cs_init" oninput="maskInput(this)"></div>
+                        <div class="col-half"><span class="calc-label">Aporte Mensal</span><input type="tel" class="calc-input-styled" id="cs_month" oninput="maskInput(this)"></div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="col-half"><span class="calc-label">Taxa Anual (%)</span><input type="text" inputmode="decimal" class="calc-input-styled" id="cs_rate" placeholder="ex: 12"></div>
+                        <div class="col-half"><span class="calc-label">Anos</span><input type="text" inputmode="numeric" class="calc-input-styled" id="cs_time" placeholder="ex: 10"></div>
+                    </div>
+                    <button class="btn-calc" onclick="calcSimples()">Calcular</button>
+                    <div class="projection-container" id="cs_res_container">
+                        <div class="stats-grid">
+                            <div class="stat-box"><span class="stat-lbl">Total Bruto</span><span class="stat-val" style="color:var(--accent)" id="cs_total">--</span></div>
+                            <div class="stat-box"><span class="stat-lbl">Investido</span><span class="stat-val" id="cs_invest">--</span></div>
+                            <div class="stat-box"><span class="stat-lbl">Juros</span><span class="stat-val" style="color:var(--success)" id="cs_juros">--</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPLETA -->
+                <div id="calc-completa" class="calc-section" style="display:none">
+                    <div class="calc-row">
+                        <div class="col-half"><span class="calc-label">Aporte Inicial</span><input type="tel" class="calc-input-styled" id="cc_init" oninput="maskInput(this)"></div>
+                        <div class="col-half"><span class="calc-label">Aporte Mensal</span><input type="tel" class="calc-input-styled" id="cc_month" oninput="maskInput(this)"></div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="col-half">
+                            <span class="calc-label">Taxa de Juros <select id="cc_rate_type" class="custom-select"><option value="aa">a.a</option><option value="am">a.m</option></select></span>
+                            <input type="text" inputmode="decimal" class="calc-input-styled" id="cc_rate" placeholder="ex: 12">
+                        </div>
+                        <div class="col-half">
+                            <span class="calc-label">Periodo <select id="cc_time_type" class="custom-select"><option value="anos">Anos</option><option value="meses">Meses</option></select></span>
+                            <input type="text" inputmode="numeric" class="calc-input-styled" id="cc_time" placeholder="ex: 10">
+                        </div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="col-half">
+                            <span class="calc-label">Inflacao (Opcional) <select id="cc_inf_type" class="custom-select"><option value="aa">a.a</option><option value="am">a.m</option></select></span>
+                            <input type="text" inputmode="decimal" class="calc-input-styled" id="cc_inf" placeholder="ex: 4.5">
+                        </div>
+                        <div class="col-half">
+                            <span class="calc-label">Imposto s/ Lucro</span>
+                            <select id="cc_tax_type" class="modal-select" style="margin:0;padding:11px;font-size:0.8rem;background:rgba(255,255,255,0.025)" onchange="toggleTaxInput()">
+                                <option value="regressivo">Regressivo (Tabela)</option>
+                                <option value="fixo">Fixo (%)</option>
+                                <option value="isento">Isento (LCI/LCA)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="calc-row" id="cc_tax_val_box" style="display:none">
+                        <div class="col-half">
+                            <span class="calc-label">Taxa Fixa (%)</span>
+                            <input type="text" inputmode="decimal" class="calc-input-styled" id="cc_tax_fixo" placeholder="15">
+                        </div>
+                    </div>
+
+                    <button class="btn-calc" onclick="calcCompleta()">Calcular Resultado Liquido</button>
+                    
+                    <div class="projection-container" id="cc_res_container">
+                        <div class="stats-grid" style="grid-template-columns:1fr 1fr;">
+                            <div class="stat-box"><span class="stat-lbl">Total Bruto</span><span class="stat-val" id="cc_bruto">--</span></div>
+                            <div class="stat-box"><span class="stat-lbl">Total Investido</span><span class="stat-val" id="cc_invest">--</span></div>
+                            <div class="stat-box"><span class="stat-lbl">Imposto Pago</span><span class="stat-val" style="color:var(--danger)" id="cc_tax_paid">--</span></div>
+                            <div class="stat-box"><span class="stat-lbl">Resultado Liquido</span><span class="stat-val" style="color:var(--success);font-size:1rem" id="cc_liq">--</span></div>
+                        </div>
+                        <div class="chart-line-container"><canvas id="ccChart"></canvas></div>
+                        <div class="calc-info" id="cc_info"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /content -->
+
+    <footer>
+        <div style="margin-bottom:10px"><button onclick="exportToCSV()" style="background:none;border:1px solid var(--card-border);color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;">Exportar Dados (CSV)</button></div>
+        &copy; 2026 Clearview Capital. Todos os direitos reservados.
+    </footer>
+</div>
+
+<!-- MODAL RENDA -->
+<div id="rendaModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-title">Adicionar Renda</div>
+        <input type="tel" class="modal-input-lg" id="rendaValor" placeholder="R$ 0,00" oninput="maskInput(this)">
+        <select id="rendaCat" class="modal-select">
+            <option value="" disabled selected>Categoria</option>
+            <option value="Salario">Salario</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Investimentos">Investimentos</option>
+            <option value="Outros">Outros</option>
+        </select>
+        <input type="text" class="modal-input-desc" id="rendaDesc" placeholder="Descricao (opcional)">
+        <button class="btn-confirm-add" onclick="addRenda()">Confirmar</button>
+        <button class="btn-close-modal" onclick="closeRendaModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL GASTO RAPIDO -->
+<div id="addModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-title">Adicionar Gasto</div>
+        <input type="tel" class="modal-input-lg" id="quickValue" placeholder="R$ 0,00" oninput="maskInput(this)">
+        <select id="quickCat" class="modal-select" onchange="updateSubcats()">
+            <option value="" disabled selected>Categoria</option>
+        </select>
+        <select id="quickSub" class="modal-select" disabled>
+            <option value="" disabled selected>Item</option>
+        </select>
+        <input type="text" class="modal-input-desc" id="quickPay" placeholder="Metodo Pagamento (opcional)">
+        <button class="btn-confirm-add" onclick="processAddExpense()">Confirmar</button>
+        <button class="btn-close-modal" onclick="closeAddModal()">Cancelar</button>
     </div>
 </div>
 
